@@ -6,7 +6,7 @@ metadata:
 spec:
   type: NodePort
   selector:
-    app: dnsmasq
+    app: dnsmasq-service
   ports:
   - protocol: UDP
     port: 53
