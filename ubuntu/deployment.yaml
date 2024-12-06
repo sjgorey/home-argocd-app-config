@@ -16,6 +16,5 @@ spec:
       containers:
       - name: ubuntu
         image: ubuntu
-        command:
-        - "sleep"
-        - "604800"
+        command:  ["/bin/bash"]
+        args: ["-c", "apt update && apt install curl && sleep 86400"]
