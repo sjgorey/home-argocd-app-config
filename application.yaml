@@ -1,17 +1,17 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: home
+  name: default
   namespace: argocd
 spec:
-  project: home
+  project: default
   source:
     repoURL: https://github.com/sjgorey/home-argocd-app-config.git
     targetRevision: HEAD
     path: apps
   destination: 
     server: https://kubernetes.default.svc
-    namespace: default
+    namespace: argocd
   syncPolicy:
     syncOptions:
     - CreateNamespace=true
