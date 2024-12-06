@@ -2,12 +2,12 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: myapp
-  namespace: argocd
+  namespace: myapp
   finalizers:
   - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
-    namespace: argocd
+    namespace: myapp
     server: {{ .Values.spec.destination.server }}
   project: {{ .Values.spec.project }}
   source:
