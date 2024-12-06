@@ -10,5 +10,5 @@ spec:
   - protocol: UDP
     port: 53
     targetPort: 53
-  clusterIP: 10.0.0.53  # Assign a static ClusterIP (optional)
+#  clusterIP: 10.0.0.53  # Assign a static ClusterIP (optional)
   
