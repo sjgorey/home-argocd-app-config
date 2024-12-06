@@ -4,6 +4,4 @@ spec:
   source:
     repoURL: https://github.com/sjgorey/home-argocd-app-config.git
     targetRevision: HEAD
-  project:
-    home
-    
+  project: home
