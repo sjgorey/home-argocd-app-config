@@ -9,7 +9,7 @@ spec:
   destination:
     namespace: argocd
     server: {{ .Values.spec.destination.server }}
-  project: default
+  project: home
   source:
     path: dnsmasq
     repoURL: {{ .Values.spec.source.repoURL }}
