@@ -2,12 +2,12 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: dnsmasq
-  namespace: argocd
+  namespace: kube-system
   # finalizers:
   # - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
-    namespace: argocd
+    namespace: kube-system
     server: {{ .Values.spec.destination.server }}
   project: {{ .Values.spec.project }}
   source:
