@@ -1,19 +1,28 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: myapp
+  name: dnsmasq
+  namespace: kube-system
 spec:
+  replicas: 1
   selector:
     matchLabels:
-      app: myapp
-  replicas: 1
+      app: dnsmasq
   template:
     metadata:
       labels:
-        app: myapp
+        app: dnsmasq
     spec:
       containers:
-      - name: myapp
-        image: nanajanashia/argocd-app:1.2
-        ports:
-        - containerPort: 8080
+      - name: dnsmasq
+        image: jpillora/dnsmasq    # A lightweight dnsmasq container image
+        args:
+        - --no-daemon
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/dnsmasq.conf
+          subPath: dnsmasq.conf
+      volumes:
+      - name: config-volume
+        configMap:
+          name: dnsmasq-config
