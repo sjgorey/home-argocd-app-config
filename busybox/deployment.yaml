@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: curl
+  name: busybox
   namespace: default
 spec:
   selector:
     matchLabels:
-      app: curl
+      app: busybox
   replicas: 1
   template:
     metadata:
       labels:
-        app: curl
+        app: busybox
     spec:
       containers:
-      - name: curl
-        image: curlimages/curl
+      - name: busybox
+        image: busybox
