@@ -18,4 +18,17 @@ sudo k3s agent --server https://{MASTER}:6443 --token ${NODE_TOKEN}
 
 ## setup ArcgoCD
 
+https://argo-cd.readthedocs.io/en/stable/getting_started/
+
+### create namespace
+kubectl create namespace argocd
+
+### install argocd
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+### switch service to loadbalancer
+kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
+
+
+### add port forarding so we can access UI
+kubectl port-forward -n argocd svc/argocd-server 8080:443
