@@ -17,4 +17,4 @@ spec:
       - name: ubuntu
         image: ubuntu
         command:  ["/bin/bash"]
-        args: ["-c", "apt update && apt install curl && sleep 86400"]
+        args: ["-c", "apt update && apt install curl -y && sleep 86400"]
