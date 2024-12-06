@@ -4,3 +4,10 @@ metadata:
   name: test
   annotations:
     argocd.argoproj.io/sync-wave: "-1"
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: myapps
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
