@@ -12,7 +12,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: httpd-service
+            name: httpd
             port:
               number: 80
               
