@@ -5,7 +5,7 @@ metadata:
   namespace: kube-system
 spec:
   selector:
-    app: dnsmasq
+    app: dnsmasq-service
   ports:
   - protocol: UDP
     port: 53
