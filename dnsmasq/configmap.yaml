@@ -10,4 +10,4 @@ data:
     server=192.168.1.1     # Or your router/local DNS server
     cache-size=1000        # Cache up to 1000 queries
     log-queries
-    address=/home.local/192.168.1.5  # Map home.local to a specific IP
+    address=/home.local/192.168.1.12  # Map home.local to a specific IP
