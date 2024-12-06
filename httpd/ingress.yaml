@@ -2,7 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: httpd-ingress
-  namespace: myapp
+  namespace: default
 spec:
   rules:
   - host: example.com
