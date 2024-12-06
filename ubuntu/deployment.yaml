@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: busybox
+  name: ubuntu
   namespace: default
 spec:
   selector:
     matchLabels:
-      app: busybox
+      app: ubuntu
   replicas: 1
   template:
     metadata:
       labels:
-        app: busybox
+        app: ubuntu
     spec:
       containers:
-      - name: busybox
-        image: busybox
+      - name: ubuntu
+        image: ubuntu
