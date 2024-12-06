@@ -9,7 +9,7 @@ spec:
   destination:
     namespace: argocd
     server: {{ .Values.spec.destination.server }}
-  project: home
+  project: {{ .Values.spec.project }}
   source:
     path: myapp
     repoURL: {{ .Values.spec.source.repoURL }}
