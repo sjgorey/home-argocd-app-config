@@ -14,5 +14,5 @@ spec:
           service:
             name: httpd
             port:
-              number: web
+              name: web
               
