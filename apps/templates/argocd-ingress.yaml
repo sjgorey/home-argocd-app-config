@@ -13,12 +13,12 @@ spec:
       services:
         - name: argocd-server
           port: 80
-    - kind: Rule
-      match: Host(`argocd.example.com`) && Header(`Content-Type`, `application/grpc`)
-      priority: 11
-      services:
-        - name: argocd-server
-          port: 80
-          scheme: h2c
+    # - kind: Rule
+    #   match: Host(`argocd.example.com`) && Header(`Content-Type`, `application/grpc`)
+    #   priority: 11
+    #   services:
+    #     - name: argocd-server
+    #       port: 80
+    #       scheme: h2c
   tls:
     certResolver: default
