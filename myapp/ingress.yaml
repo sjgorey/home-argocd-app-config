@@ -5,7 +5,7 @@ metadata:
   namespace: myapp
 spec:
   rules:
-  - host: example.com
+  - host: myapp.example.com
     http:
       paths:
       - path: /
