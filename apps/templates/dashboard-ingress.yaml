@@ -3,8 +3,8 @@ kind: Ingress
 metadata:
   name: dashboard-ingress
   namespace: kubernetes-dashboard
-annotations:
-    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    annotations:
+      traefik.ingress.kubernetes.io/router.entrypoints: websecure
 spec:
   tls:
   - hosts:
