@@ -4,7 +4,9 @@ metadata:
   name: kubernetes-dashboard-ingress
   namespace: kubernetes-dashboard
   annotations:
-    kubernetes.io/ingress.class: "traefik"
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
 spec:
   rules:
   - host: dashboard.example.com
@@ -17,4 +19,7 @@ spec:
             name: kubernetes-dashboard
             port:
               number: 443
-
+  tls:
+  - hosts:
+    - dashboard.example.com
+    secretName: kubernetes-dashboard-tls-secret
