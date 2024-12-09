@@ -1,0 +1,15 @@
+# sc-nfs.yaml
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: nfs-csi
+provisioner: nfs.csi.k8s.io
+parameters:
+  server: 192.168.1.9
+  share: /media/sgorey/f309ef24-ef65-4daf-9b3c-e8472a7fd845
+reclaimPolicy: Delete
+volumeBindingMode: Immediate
+mountOptions:
+  - hard
+  - nfsvers=4.1

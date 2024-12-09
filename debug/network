@@ -1,0 +1,4 @@
+kubectl run net-debug --image=nicolaka/netshoot --restart=Never -- sleep 3600
+kubectl exec -it net-debug -- ping 8.8.8.8
+kubectl exec -it net-debug -- curl -I https://google.com
+
