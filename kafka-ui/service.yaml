@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-ui
+  namespace: default
+spec:
+  selector:
+    app: kafka-ui
+
+  ports:
+  - name: web
+    port: 80
+    targetPort: web
