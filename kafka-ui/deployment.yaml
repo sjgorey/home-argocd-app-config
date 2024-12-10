@@ -7,7 +7,7 @@ spec:
   selector:
     matchLabels:
       app: kafka-ui
-  replicas: 0
+  replicas: 1
   template:
     metadata:
       labels:
@@ -20,13 +20,15 @@ spec:
           - name: web
             containerPort: 8080
         env:
-          - name: KAFKA_CLUSTERS_0_NAME
-            value: home
-          - name: KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS
-            value: "my-release-kafka.default.svc.cluster.local:9092"
-          - name: KAFKA_CLUSTERS_0_PROPERTIES_SECURITY_PROTOCOL
-            value: PLAINTEXT
-          - name: KAFKA_CLUSTERS_0_PROPERTIES_SASL_MECHANISM
-            value: PLAIN
-          - name: KAFKA_CLUSTERS_0_PROPERTIES_SASL_JAAS_CONFIG
-            value: "org.apache.kafka.common.security.plain.PlainLoginModule required username='user1' password='M8mAcWrB4o';"
+          - name: DYNAMIC_CONFIG_ENABLED
+            value: "true"
+          # - name: KAFKA_CLUSTERS_0_NAME
+          #   value: home
+          # - name: KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS
+          #   value: "my-release-kafka.default.svc.cluster.local:9092"
+          # - name: KAFKA_CLUSTERS_0_PROPERTIES_SECURITY_PROTOCOL
+          #   value: PLAINTEXT
+          # - name: KAFKA_CLUSTERS_0_PROPERTIES_SASL_MECHANISM
+          #   value: PLAIN
+          # - name: KAFKA_CLUSTERS_0_PROPERTIES_SASL_JAAS_CONFIG
+          #   value: "org.apache.kafka.common.security.plain.PlainLoginModule required username='user1' password='M8mAcWrB4o';"
