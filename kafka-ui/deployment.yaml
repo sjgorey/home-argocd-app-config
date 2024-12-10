@@ -23,10 +23,10 @@ spec:
           - name: KAFKA_CLUSTERS_0_NAME
             value: home
           - name: KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS
-            value: my-release-kafka-controller-0.my-release-kafka-controller-headless.default.svc.cluster.local:9092,my-release-kafka-controller-1.my-release-kafka-controller-headless.default.svc.cluster.local:9092,my-release-kafka-controller-2.my-release-kafka-controller-headless.default.svc.cluster.local:9092
+            value: "my-release-kafka-controller-0.my-release-kafka-controller-headless.default.svc.cluster.local:9092,my-release-kafka-controller-1.my-release-kafka-controller-headless.default.svc.cluster.local:9092,my-release-kafka-controller-2.my-release-kafka-controller-headless.default.svc.cluster.local:9092"
           - name: KAFKA_CLUSTERS_0_PROPERTIES_SECURITY_PROTOCOL
-            value: "PLAINTEXT"
+            value: PLAINTEXT
           - name: KAFKA_CLUSTERS_0_PROPERTIES_SASL_MECHANISM
-            value: "PLAIN"
+            value: PLAIN
           - name: KAFKA_CLUSTERS_0_PROPERTIES_SASL_JAAS_CONFIG
             value: "org.apache.kafka.common.security.plain.PlainLoginModule required username='user1' password='M8mAcWrB4o';"
