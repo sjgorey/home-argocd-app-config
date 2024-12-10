@@ -14,5 +14,5 @@ spec:
           service:
             name: prometheus-grafana
             port:
-              name: web
+              number: 80
               
