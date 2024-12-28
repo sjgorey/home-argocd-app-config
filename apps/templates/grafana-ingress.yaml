@@ -5,7 +5,7 @@ metadata:
   namespace: default
 spec:
   rules:
-  - host: grafana.example.com
+  - host: grafana.gorco.us
     http:
       paths:
       - path: /
