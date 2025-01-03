@@ -15,4 +15,14 @@ spec:
             name: httpd
             port:
               name: web
+  - host: httpd.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: httpd
+            port:
+              name: web
               
