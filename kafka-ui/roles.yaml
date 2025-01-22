@@ -13,6 +13,9 @@ data:
             - home
           subjects:
             - provider: oauth_github
+              type: organization
+              value: "gorco-us"
+            - provider: oauth_github
               type: user
               value: "sjgorey"
           permissions:
