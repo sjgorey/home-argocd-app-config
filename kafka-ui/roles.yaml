@@ -29,7 +29,7 @@ data:
 
             - resource: topic
               value: ".*"
-              actions: all
+              actions: view
 
             - resource: consumer
               value: ".*"
