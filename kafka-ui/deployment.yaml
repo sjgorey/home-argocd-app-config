@@ -42,7 +42,7 @@ spec:
           - name: AUTH_OAUTH2_CLIENT_GITHUB_CLIENTSECRET
             value: "f743274e0b495b127b0da2dc01f25f624e5ef6b1"
           - name: SPRING_CONFIG_ADDITIONAL-LOCATION
-            value: /etc/kafkaui/roles.yaml
+            value: "/etc/kafkaui/roles.yaml"
         volumeMounts:
             - name: roles
               mountPath: /etc/kafkaui  # Mount point in the container
