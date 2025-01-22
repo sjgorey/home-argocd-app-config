@@ -33,3 +33,17 @@ spec:
             value: "SCRAM-SHA-256"
           - name: KAFKA_CLUSTERS_0_PROPERTIES_SASL_JAAS_CONFIG
             value: "org.apache.kafka.common.security.scram.ScramLoginModule required username='user1' password='cYmXVlUSYz';"
+          - name: OAUTH2_ENABLED
+            value: "true"
+          - name: OAUTH2_CLIENT_ID
+            value: "Ov23lisfwVmVABHWvZgF"
+          - name: OAUTH2_CLIENT_SECRET
+            value: "f743274e0b495b127b0da2dc01f25f624e5ef6b1"
+          - name: OAUTH2_AUTH_URI
+            value: https://github.com/login/oauth/authorize
+          - name: OAUTH2_USER_INFO_URI
+            value: https://api.github.com/user
+          - name: OAUTH2_SCOPE
+            value: "read:org"
+          - name: OAUTH2_REDIRECT_URI
+            value: https://kafka-ui.gorco.us/oauth/callback
