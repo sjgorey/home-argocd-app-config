@@ -52,7 +52,4 @@ spec:
           - name: AUTH_OAUTH2_CLIENT_GITHUB_USER-NAME-ATTRIBUTE
             value: "login"
           - name: AUTH_OAUTH2_CLIENT_GITHUB_CUSTOM-PARAMS_TYPE
-            value: "github
-
-
-
+            value: "github"
