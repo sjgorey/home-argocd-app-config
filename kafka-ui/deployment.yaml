@@ -33,8 +33,8 @@ spec:
             value: "SCRAM-SHA-256"
           - name: KAFKA_CLUSTERS_0_PROPERTIES_SASL_JAAS_CONFIG
             value: "org.apache.kafka.common.security.scram.ScramLoginModule required username='user1' password='cYmXVlUSYz';"
-          - name: OAUTH2_ENABLED
-            value: "TRUE"
+          - name: AUTH_TYPE
+            value: "OAUTH2"
           - name: OAUTH2_CLIENT_ID
             value: "Ov23lisfwVmVABHWvZgF"
           - name: OAUTH2_CLIENT_SECRET
