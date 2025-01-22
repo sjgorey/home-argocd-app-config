@@ -26,10 +26,10 @@ spec:
           - name: KAFKA_CLUSTERS_0_NAME
             value: "home"
           - name: KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS
-            value: "my-release-kafka.default.svc.cluster.local:9092"
+            value: "kafka.default.svc.cluster.local:9092"
           - name: KAFKA_CLUSTERS_0_PROPERTIES_SECURITY_PROTOCOL
             value: "SASL_PLAINTEXT"
           - name: KAFKA_CLUSTERS_0_PROPERTIES_SASL_MECHANISM
             value: "SCRAM-SHA-256"
           - name: KAFKA_CLUSTERS_0_PROPERTIES_SASL_JAAS_CONFIG
-            value: "org.apache.kafka.common.security.scram.ScramLoginModule required username='user1' password='M8mAcWrB4o';"
+            value: "org.apache.kafka.common.security.scram.ScramLoginModule required username='user1' password='cYmXVlUSYz';"
