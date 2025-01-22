@@ -14,7 +14,7 @@ data:
           subjects:
             - provider: oauth_github
               type: user
-              value: "sgorey"
+              value: "sjgorey"
           permissions:
             - resource: applicationconfig
               actions: all
