@@ -40,10 +40,10 @@ spec:
           - name: OAUTH2_CLIENT_SECRET
             value: "f743274e0b495b127b0da2dc01f25f624e5ef6b1"
           - name: OAUTH2_AUTH_URI
-            value: https://github.com/login/oauth/authorize
+            value: "https://github.com/login/oauth/authorize"
           - name: OAUTH2_USER_INFO_URI
-            value: https://api.github.com/user
+            value: "https://api.github.com/user"
           - name: OAUTH2_SCOPE
             value: "read:org"
           - name: OAUTH2_REDIRECT_URI
-            value: https://kafka-ui.gorco.us/oauth/callback
+            value: "https://kafka-ui.gorco.us/oauth/callback"
