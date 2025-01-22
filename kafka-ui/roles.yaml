@@ -11,6 +11,7 @@ data:
         - name: "admins"
           clusters:
             - home
+
           subjects:
             - provider: oauth_github
               type: organization
@@ -18,6 +19,7 @@ data:
             - provider: oauth_github
               type: user
               value: "sjgorey"
+
           permissions:
             - resource: applicationconfig
               actions: all
