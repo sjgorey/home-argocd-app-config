@@ -39,7 +39,7 @@ spec:
             value: "github"
           - name: AUTH_OAUTH2_CLIENT_GITHUB_CLIENTID
             value: "Ov23li8DJLkgD6lKMXe4"
-          - name: OAUTH2_SCOPE
+          - name: AUTH_OAUTH2_CLIENT_GITHUB_SCOPE
             value: "read:org"
           - name: AUTH_OAUTH2_CLIENT_GITHUB_CLIENTSECRET
             value: "d02152d2a4efd67d408d57def210d1d52a6c2c76"
