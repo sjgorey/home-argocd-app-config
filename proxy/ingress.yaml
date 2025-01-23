@@ -1,28 +1,28 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: httpd-ingress
+  name: proxy-ingress
   namespace: default
 spec:
   rules:
-  - host: httpd.gorco.us
+  - host: proxy.gorco.us
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: httpd
+            name: proxy
             port:
               name: web
-  - host: httpd.example.com
+  - host: proxy.example.com
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: httpd
+            name: proxy
             port:
               name: web
               
