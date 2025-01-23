@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: httpd
+  name: proxy
   namespace: default
 spec:
   selector:
-    app: httpd
+    app: proxy
 
   ports:
   - name: web
     port: 80
-    targetPort: web
+    targetPort: 3128
