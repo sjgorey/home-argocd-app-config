@@ -10,4 +10,4 @@ spec:
   ports:
   - name: web
     port: 443
-    targetPort: 443
+    targetPort: 3128
