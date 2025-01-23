@@ -20,10 +20,10 @@ spec:
           - name: web
             containerPort: 3128
         volumeMounts:
-            - name: https
+            - name: https-cm
               mountPath: /etc/squid/conf.d
               readOnly: true
       volumes:
-        - name: https
+        - name: https-cm
           configMap:
-            name: https-proxy
+            name: https-proxy-cm
