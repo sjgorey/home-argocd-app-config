@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: restrict-egress
+  namespace: default
+spec:
+  podSelector:
+    matchLabels:
+      app: it-tools
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - ipBlock:
+            cidr: 10.0.0.0/8 # Cluster internal IP range, update this to match your cluster's CIDR
+      ports:
+        - protocol: TCP
+          port: 443
+    - to:
+        - ipBlock:
+            cidr: 172.16.0.0/12 # Adjust based on your cluster setup
+      ports:
+        - protocol: TCP
+          port: 443
