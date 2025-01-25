@@ -6,15 +6,19 @@ metadata:
 spec:
   destination:
     namespace: argocd
-    server: {{ .Values.spec.destination.server }}
-  project: {{ .Values.spec.project }}
+    server:
+      "{ .Values.spec.destination.server }": null
+  project:
+    "{ .Values.spec.project }": null
   source:
     path: it-tools
-    repoURL: {{ .Values.spec.source.repoURL }}
-    targetRevision: {{ .Values.spec.source.targetRevision }}
+    repoURL:
+      "{ .Values.spec.source.repoURL }": null
+    targetRevision:
+      "{ .Values.spec.source.targetRevision }": null
   syncPolicy:
-    syncOptions:
-    - CreateNamespace=true
     automated:
-      selfHeal: true
       prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
