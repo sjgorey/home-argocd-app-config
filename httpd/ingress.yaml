@@ -35,3 +35,13 @@ spec:
             name: httpd
             port:
               name: web              
+  - host: guy4gov.gorco.us
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: httpd
+            port:
+              name: web     
