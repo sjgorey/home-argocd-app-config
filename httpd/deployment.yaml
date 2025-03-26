@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: httpd
-        image: httpd
+        image: ghcr.io/sjgorey/httpd-project:latest
         ports:
           - name: web
             containerPort: 80
