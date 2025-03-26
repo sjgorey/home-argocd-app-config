@@ -13,6 +13,8 @@ spec:
       labels:
         app: httpd
     spec:
+      imagePullSecrets:
+        - name: ghcr-secret
       containers:
       - name: httpd
         image: ghcr.io/sjgorey/httpd-project:latest
