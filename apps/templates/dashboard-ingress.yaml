@@ -9,16 +9,16 @@ metadata:
     traefik.ingress.kubernetes.io/router.tls: "true"
 spec:
   rules:
-  - host: dashboard.gorco.us
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: kubernetes-dashboard
-            port:
-              number: 443
+  # - host: dashboard.gorco.us
+  #   http:
+  #     paths:
+  #     - path: /
+  #       pathType: Prefix
+  #       backend:
+  #         service:
+  #           name: kubernetes-dashboard
+  #           port:
+  #             number: 443
   - host: dashboard.example.com
     http:
       paths:
