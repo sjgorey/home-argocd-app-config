@@ -10,10 +10,8 @@ metadata:
     kubernetes.io/ingress.class: traefik
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
     traefik.ingress.kubernetes.io/router.tls: "true"
-    # Backend protocol is HTTPS for kubernetes-dashboard
-    traefik.ingress.kubernetes.io/service.serversscheme: https
-    # Skip certificate verification for self-signed certs
-    traefik.ingress.kubernetes.io/service.serverstransport.insecureskipverify: "true"
+    # Backend protocol is HTTP since dashboard is running insecure
+    traefik.ingress.kubernetes.io/service.serversscheme: http
 spec:
   rules:
   - host: dashboard.example.com  # Change this to your actual domain
@@ -25,7 +23,7 @@ spec:
           service:
             name: kubernetes-dashboard
             port:
-              number: 443
+              number: 80
   tls:
   - hosts:
     - dashboard.example.com  # Change this to your actual domain
