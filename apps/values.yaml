@@ -1,7 +1,0 @@
-spec:
-  destination:
-    server: https://kubernetes.default.svc
-  source:
-    repoURL: https://github.com/sjgorey/home-argocd-app-config.git
-    targetRevision: HEAD
-  project: default
