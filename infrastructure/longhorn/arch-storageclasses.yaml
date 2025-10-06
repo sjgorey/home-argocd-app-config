@@ -21,8 +21,7 @@ parameters:
   fromBackup: ""
   fsType: "ext4"
   dataLocality: "disabled"
-  # Node selector to place volumes only on AMD64 nodes
-  nodeSelector: "kubernetes.io/arch=amd64"
+  # Note: Architecture-specific placement is handled by pod nodeSelector + volumeBindingMode: WaitForFirstConsumer
 
 ---
 # StorageClass for ARM64 nodes
@@ -44,8 +43,7 @@ parameters:
   fromBackup: ""
   fsType: "ext4"
   dataLocality: "disabled"
-  # Node selector to place volumes only on ARM64 nodes
-  nodeSelector: "kubernetes.io/arch=arm64"
+  # Note: Architecture-specific placement is handled by pod nodeSelector + volumeBindingMode: WaitForFirstConsumer
 
 # ---
 # # StorageClass for specific node zones/regions

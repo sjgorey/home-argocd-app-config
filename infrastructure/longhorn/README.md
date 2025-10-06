@@ -179,12 +179,15 @@ To upgrade Longhorn:
 
 ### Architecture-Specific Volumes
 
-#### Option 1: Using StorageClasses (Recommended)
-```bash
-# Apply the architecture-specific StorageClasses
-kubectl apply -f arch-storageclasses.yaml
+#### How It Works
+Architecture-specific placement works through the combination of:
+1. **StorageClass** with `volumeBindingMode: WaitForFirstConsumer`
+2. **Pod** with `nodeSelector` for the desired architecture
+3. **Longhorn** creates the volume on the node where the pod gets scheduled
 
-# Create a PVC for AMD64 nodes
+#### Example: AMD64-Specific Volume
+```bash
+# 1. Create PVC with arch-specific StorageClass
 kubectl apply -f - <<EOF
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -192,24 +195,36 @@ metadata:
   name: my-amd64-storage
 spec:
   accessModes: [ReadWriteOnce]
-  storageClassName: longhorn-amd64
+  storageClassName: longhorn-amd64  # Uses WaitForFirstConsumer
   resources:
     requests:
       storage: 10Gi
+---
+# 2. Create Pod with nodeSelector (this triggers volume creation)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-amd64-app
+spec:
+  nodeSelector:
+    kubernetes.io/arch: amd64  # This ensures AMD64 placement
+  containers:
+  - name: app
+    image: nginx
+    volumeMounts:
+    - name: storage
+      mountPath: /data
+  volumes:
+  - name: storage
+    persistentVolumeClaim:
+      claimName: my-amd64-storage
 EOF
 ```
 
-#### Option 2: Via Longhorn UI
-1. Access Longhorn UI at your ingress URL
-2. Go to "Volume" → "Create Volume"
-3. Set "Node Selector" to `kubernetes.io/arch=amd64` (or `arm64`)
-4. Configure size, replicas, and other settings
-
-#### Option 3: Direct Volume CRDs
-```bash
-# Apply direct volume definitions
-kubectl apply -f direct-volumes.yaml
-```
+#### Important Notes
+- **PVC will stay Pending** until a pod with proper nodeSelector consumes it
+- **Volume gets created** on the node where the pod is scheduled
+- **Architecture specificity** comes from pod scheduling, not StorageClass parameters
 
 ### Available StorageClasses
 - `longhorn-amd64` - Volumes on AMD64/x86_64 nodes
