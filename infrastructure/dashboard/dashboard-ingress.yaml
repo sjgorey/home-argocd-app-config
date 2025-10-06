@@ -3,23 +3,20 @@ kind: Ingress
 metadata:
   name: kubernetes-dashboard-ingress
   namespace: kubernetes-dashboard
+  labels:
+    app.kubernetes.io/name: kubernetes-dashboard
+    app.kubernetes.io/component: ingress
   annotations:
     kubernetes.io/ingress.class: traefik
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
     traefik.ingress.kubernetes.io/router.tls: "true"
+    # Backend protocol is HTTPS for kubernetes-dashboard
+    traefik.ingress.kubernetes.io/service.serversscheme: https
+    # Skip certificate verification for self-signed certs
+    traefik.ingress.kubernetes.io/service.serverstransport.insecureskipverify: "true"
 spec:
   rules:
-  # - host: dashboard.gorco.us
-  #   http:
-  #     paths:
-  #     - path: /
-  #       pathType: Prefix
-  #       backend:
-  #         service:
-  #           name: kubernetes-dashboard
-  #           port:
-  #             number: 443
-  - host: dashboard.example.com
+  - host: dashboard.example.com  # Change this to your actual domain
     http:
       paths:
       - path: /
@@ -31,6 +28,5 @@ spec:
               number: 443
   tls:
   - hosts:
-    # - dashboard.gorco.us
-    - dashboard.example.com
+    - dashboard.example.com  # Change this to your actual domain
     secretName: kubernetes-dashboard-tls-secret
