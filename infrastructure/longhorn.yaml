@@ -33,6 +33,7 @@ spec:
       name: engineimages.longhorn.io
       jsonPointers:
         - /spec/conversion/webhook/clientConfig/caBundle
+        - /spec/preserveUnknownFields
         - /status
         - /metadata/annotations
         - /metadata/labels
@@ -41,6 +42,7 @@ spec:
       name: nodes.longhorn.io
       jsonPointers:
         - /spec/conversion/webhook/clientConfig/caBundle
+        - /spec/preserveUnknownFields
         - /status
         - /metadata/annotations
         - /metadata/labels
@@ -49,6 +51,7 @@ spec:
       name: volumes.longhorn.io
       jsonPointers:
         - /spec/conversion/webhook/clientConfig/caBundle
+        - /spec/preserveUnknownFields
         - /status
         - /metadata/annotations
         - /metadata/labels
@@ -57,6 +60,7 @@ spec:
       kind: CustomResourceDefinition
       jsonPointers:
         - /spec/conversion/webhook/clientConfig/caBundle
+        - /spec/preserveUnknownFields
         - /status
         - /metadata/annotations
         - /metadata/labels
