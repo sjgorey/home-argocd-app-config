@@ -13,9 +13,8 @@ metadata:
     app.kubernetes.io/component: auth
 type: Opaque
 data:
-  # admin:longhorn123 encoded properly for basic auth
-  # Generated with: echo -n "admin:longhorn123" | htpasswd -niB admin | base64 -w 0
-  users: YWRtaW46JGFwcjEkSGM2Z0M5ZGskbUhaWUlINlB1V2F4dVJHUXF0SzgwLwo=
+  # admin:longhorn123 (properly generated with openssl passwd -apr1)
+  users: YWRtaW46JGFwcjEkdGNIdk83ZVQkWFZKa3d0dEJhZXRlWVB1ZnowODllMQ==
 
 ---
 # 2. Create Traefik middleware for basic auth
