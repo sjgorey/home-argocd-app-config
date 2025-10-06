@@ -9,6 +9,17 @@ This directory contains the Kubernetes Dashboard deployment configuration for Ar
 - `sa.yaml` - Admin user ServiceAccount and ClusterRoleBinding for full cluster access
 - `tls-secret.yaml` - TLS certificate secret for HTTPS access at ingress level
 - `certificate-optional.yaml` - Alternative cert-manager configuration (if available)
+- `enhanced-rbac-optional.yaml` - Optional enhanced RBAC for kubernetes-dashboard ServiceAccount
+
+## RBAC Configuration
+
+The dashboard is configured to use the `admin-user` ServiceAccount which has cluster-admin privileges. This allows full access to all cluster resources.
+
+### Alternative RBAC Options:
+
+1. **Current (Recommended for Development)**: Uses `admin-user` with cluster-admin permissions
+2. **Restricted Access**: Uncomment and use `enhanced-rbac-optional.yaml` to grant only view permissions
+3. **Custom Permissions**: Modify the ClusterRole in `enhanced-rbac-optional.yaml` for specific needs
 
 ## Configuration
 

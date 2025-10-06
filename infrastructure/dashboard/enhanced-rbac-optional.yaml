@@ -1,0 +1,36 @@
+# Optional: Enhanced permissions for kubernetes-dashboard ServiceAccount
+# Use this instead of changing serviceAccountName to admin-user if you prefer
+# to grant specific permissions rather than cluster-admin
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: kubernetes-dashboard-enhanced
+  labels:
+    app.kubernetes.io/name: kubernetes-dashboard
+    app.kubernetes.io/component: rbac
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: view  # or cluster-admin for full access
+subjects:
+- kind: ServiceAccount
+  name: kubernetes-dashboard
+  namespace: kubernetes-dashboard
+
+# Uncomment the following if you need more specific permissions
+# ---
+# apiVersion: rbac.authorization.k8s.io/v1
+# kind: ClusterRole
+# metadata:
+#   name: kubernetes-dashboard-enhanced
+# rules:
+# - apiGroups: [""]
+#   resources: ["namespaces"]
+#   verbs: ["get", "list", "watch"]
+# - apiGroups: [""]
+#   resources: ["nodes", "persistentvolumes"]
+#   verbs: ["get", "list", "watch"]
+# - apiGroups: ["apps"]
+#   resources: ["deployments", "replicasets", "daemonsets", "statefulsets"]
+#   verbs: ["get", "list", "watch"]
