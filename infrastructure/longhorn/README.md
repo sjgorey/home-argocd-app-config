@@ -9,6 +9,9 @@ This directory contains the complete Longhorn distributed storage setup for K3s 
 - `longhorn-tls-secret.yaml` - TLS certificate for HTTPS access
 - `longhorn-auth.yaml` - Basic authentication setup for UI security
 - `k3s-prerequisites.yaml` - K3s-specific requirements (iSCSI installation)
+- `arch-storageclasses.yaml` - Architecture-specific StorageClasses (AMD64, ARM64, zones)
+- `example-pvcs.yaml` - Example PVCs using different StorageClasses
+- `direct-volumes.yaml` - Direct Longhorn Volume CRDs for advanced control
 
 ## Prerequisites
 
@@ -174,6 +177,46 @@ To upgrade Longhorn:
 
 ## Example Usage
 
+### Architecture-Specific Volumes
+
+#### Option 1: Using StorageClasses (Recommended)
+```bash
+# Apply the architecture-specific StorageClasses
+kubectl apply -f arch-storageclasses.yaml
+
+# Create a PVC for AMD64 nodes
+kubectl apply -f - <<EOF
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: my-amd64-storage
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: longhorn-amd64
+  resources:
+    requests:
+      storage: 10Gi
+EOF
+```
+
+#### Option 2: Via Longhorn UI
+1. Access Longhorn UI at your ingress URL
+2. Go to "Volume" → "Create Volume"
+3. Set "Node Selector" to `kubernetes.io/arch=amd64` (or `arm64`)
+4. Configure size, replicas, and other settings
+
+#### Option 3: Direct Volume CRDs
+```bash
+# Apply direct volume definitions
+kubectl apply -f direct-volumes.yaml
+```
+
+### Available StorageClasses
+- `longhorn-amd64` - Volumes on AMD64/x86_64 nodes
+- `longhorn-arm64` - Volumes on ARM64 nodes  
+- `longhorn-zone-a` - Volumes in specific zones
+- `longhorn-local` - Single-replica local storage
+
 ### Creating a Persistent Volume
 ```yaml
 apiVersion: v1
@@ -183,7 +226,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: longhorn
+  storageClassName: longhorn  # or longhorn-amd64, longhorn-arm64, etc.
   resources:
     requests:
       storage: 10Gi
@@ -196,6 +239,8 @@ kind: Pod
 metadata:
   name: test-pod
 spec:
+  nodeSelector:
+    kubernetes.io/arch: amd64  # Match the storage architecture
   containers:
   - name: test-container
     image: nginx

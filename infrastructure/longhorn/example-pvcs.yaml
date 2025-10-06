@@ -1,0 +1,74 @@
+# Example PVCs using architecture-specific StorageClasses
+# These are templates - copy and modify as needed for your applications
+
+---
+# PVC for AMD64-specific storage
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: amd64-app-storage
+  namespace: default
+  labels:
+    app: my-amd64-app
+    architecture: amd64
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn-amd64  # Uses AMD64-specific StorageClass
+  resources:
+    requests:
+      storage: 10Gi
+
+---
+# PVC for ARM64-specific storage
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: arm64-app-storage
+  namespace: default
+  labels:
+    app: my-arm64-app
+    architecture: arm64
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn-arm64  # Uses ARM64-specific StorageClass
+  resources:
+    requests:
+      storage: 10Gi
+
+# ---
+# # PVC for zone-specific storage
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   name: zone-a-storage
+#   namespace: default
+#   labels:
+#     app: zone-specific-app
+#     zone: zone-a
+# spec:
+#   accessModes:
+#     - ReadWriteOnce
+#   storageClassName: longhorn-zone-a
+#   resources:
+#     requests:
+#       storage: 5Gi
+
+---
+# PVC for local (single node) storage
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: local-fast-storage
+  namespace: default
+  labels:
+    app: performance-app
+    locality: local
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn-local
+  resources:
+    requests:
+      storage: 5Gi

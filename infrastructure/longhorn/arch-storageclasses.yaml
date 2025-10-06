@@ -1,0 +1,92 @@
+# Architecture-specific StorageClasses for Longhorn
+# These allow you to create volumes that will be placed on specific CPU architectures
+
+---
+# StorageClass for AMD64/x86_64 nodes
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: longhorn-amd64
+  labels:
+    app.kubernetes.io/name: longhorn
+    app.kubernetes.io/component: storageclass
+    architecture: amd64
+provisioner: driver.longhorn.io
+allowVolumeExpansion: true
+reclaimPolicy: Delete
+volumeBindingMode: WaitForFirstConsumer  # Wait for pod scheduling to respect node selectors
+parameters:
+  numberOfReplicas: "3"
+  staleReplicaTimeout: "30"
+  fromBackup: ""
+  fsType: "ext4"
+  dataLocality: "disabled"
+  # Node selector to place volumes only on AMD64 nodes
+  nodeSelector: "kubernetes.io/arch=amd64"
+
+---
+# StorageClass for ARM64 nodes
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: longhorn-arm64
+  labels:
+    app.kubernetes.io/name: longhorn
+    app.kubernetes.io/component: storageclass
+    architecture: arm64
+provisioner: driver.longhorn.io
+allowVolumeExpansion: true
+reclaimPolicy: Delete
+volumeBindingMode: WaitForFirstConsumer  # Wait for pod scheduling to respect node selectors
+parameters:
+  numberOfReplicas: "3"
+  staleReplicaTimeout: "30"
+  fromBackup: ""
+  fsType: "ext4"
+  dataLocality: "disabled"
+  # Node selector to place volumes only on ARM64 nodes
+  nodeSelector: "kubernetes.io/arch=arm64"
+
+# ---
+# # StorageClass for specific node zones/regions
+# apiVersion: storage.k8s.io/v1
+# kind: StorageClass
+# metadata:
+#   name: longhorn-zone-a
+#   labels:
+#     app.kubernetes.io/name: longhorn
+#     app.kubernetes.io/component: storageclass
+#     zone: zone-a
+# provisioner: driver.longhorn.io
+# allowVolumeExpansion: true
+# reclaimPolicy: Delete
+# volumeBindingMode: WaitForFirstConsumer
+# parameters:
+#   numberOfReplicas: "2"  # Reduced replicas for zone-specific storage
+#   staleReplicaTimeout: "30"
+#   fromBackup: ""
+#   fsType: "ext4"
+#   dataLocality: "best-effort"
+#   # Place volumes only in specific zone
+#   nodeSelector: "topology.kubernetes.io/zone=zone-a"
+
+---
+# StorageClass with data locality (replicas on same node as workload)
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: longhorn-local
+  labels:
+    app.kubernetes.io/name: longhorn
+    app.kubernetes.io/component: storageclass
+    locality: local
+provisioner: driver.longhorn.io
+allowVolumeExpansion: true
+reclaimPolicy: Delete
+volumeBindingMode: WaitForFirstConsumer
+parameters:
+  numberOfReplicas: "1"  # Single replica for local storage
+  staleReplicaTimeout: "30"
+  fromBackup: ""
+  fsType: "ext4"
+  dataLocality: "strict-local"  # Keep data on same node as pod

@@ -1,0 +1,74 @@
+# Direct Longhorn Volume CRDs for advanced volume management
+# These create volumes directly in Longhorn without going through PVCs
+
+---
+# Volume specifically for AMD64 nodes
+apiVersion: longhorn.io/v1beta2
+kind: Volume
+metadata:
+  name: direct-amd64-volume
+  namespace: longhorn-system
+  labels:
+    app.kubernetes.io/name: longhorn
+    architecture: amd64
+spec:
+  size: "10737418240"  # 10Gi in bytes
+  numberOfReplicas: 3
+  dataEngine: v1
+  # Node selector for AMD64 architecture
+  nodeSelector:
+    - "kubernetes.io/arch=amd64"
+  diskSelector:
+    - ""  # Empty means any disk
+  dataLocality: disabled
+  accessMode: rwo  # ReadWriteOnce
+  migratable: true
+  encrypted: false
+  
+---
+# Volume for ARM64 nodes with specific requirements
+apiVersion: longhorn.io/v1beta2
+kind: Volume
+metadata:
+  name: direct-arm64-volume
+  namespace: longhorn-system
+  labels:
+    app.kubernetes.io/name: longhorn
+    architecture: arm64
+spec:
+  size: "5368709120"  # 5Gi in bytes
+  numberOfReplicas: 2  # Fewer replicas for ARM64
+  dataEngine: v1
+  # Node selector for ARM64 architecture
+  nodeSelector:
+    - "kubernetes.io/arch=arm64"
+  diskSelector:
+    - ""
+  dataLocality: best-effort  # Try to keep data local to workload
+  accessMode: rwo
+  migratable: true
+  encrypted: false
+
+---
+# Volume pinned to specific nodes
+apiVersion: longhorn.io/v1beta2
+kind: Volume
+metadata:
+  name: pinned-node-volume
+  namespace: longhorn-system
+  labels:
+    app.kubernetes.io/name: longhorn
+    placement: pinned
+spec:
+  size: "21474836480"  # 20Gi in bytes
+  numberOfReplicas: 1
+  dataEngine: v1
+  # Pin to specific nodes by hostname
+  nodeSelector:
+    - "kubernetes.io/hostname=specific-node-name"
+  diskSelector:
+    - ""
+  dataLocality: strict-local  # Keep all replicas on same node
+  accessMode: rwo
+  migratable: false  # Don't allow migration since it's pinned
+  encrypted: false
