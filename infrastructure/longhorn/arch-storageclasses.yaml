@@ -80,6 +80,8 @@ metadata:
     app.kubernetes.io/name: longhorn
     app.kubernetes.io/component: storageclass
     locality: local
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "false"  # Explicitly not default
 provisioner: driver.longhorn.io
 allowVolumeExpansion: true
 reclaimPolicy: Delete
