@@ -1,0 +1,46 @@
+# Basic Authentication for Longhorn UI
+# This creates a simple basic auth setup for accessing Longhorn
+
+# 1. Create a secret with basic auth credentials
+# Username: admin, Password: longhorn123 (change this!)
+apiVersion: v1
+kind: Secret
+metadata:
+  name: longhorn-basic-auth
+  namespace: longhorn-system
+  labels:
+    app.kubernetes.io/name: longhorn
+    app.kubernetes.io/component: auth
+type: Opaque
+data:
+  # admin:$2y$10$2b2cU8CPhOTaGrs1HRQuAueS7JTT5ZHsHSzYiFPm1leZck7Mc8T4W (admin:secret)
+  # Generated with: htpasswd -nb admin longhorn123 | base64
+  users: YWRtaW46JGFwcjEkSDY5MDR6dGckWVVaSUlsOGd3WDJkWFNlcExBci8xMAo=
+
+---
+# 2. Create Traefik middleware for basic auth
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: longhorn-auth
+  namespace: longhorn-system
+  labels:
+    app.kubernetes.io/name: longhorn
+    app.kubernetes.io/component: auth
+spec:
+  basicAuth:
+    secret: longhorn-basic-auth
+
+---
+# 3. Alternative: Create auth using external service (if you have an auth provider)
+# apiVersion: traefik.containo.us/v1alpha1
+# kind: Middleware
+# metadata:
+#   name: longhorn-forward-auth
+#   namespace: longhorn-system
+# spec:
+#   forwardAuth:
+#     address: "http://auth-service.auth-namespace.svc.cluster.local"
+#     authResponseHeaders:
+#       - "X-Auth-User"
+#       - "X-Auth-Email"

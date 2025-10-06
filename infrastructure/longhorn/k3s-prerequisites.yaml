@@ -1,0 +1,69 @@
+# K3s Prerequisites for Longhorn
+# This file contains the necessary configurations for running Longhorn on K3s
+
+# 1. Ensure iscsid is running on all nodes (required by Longhorn)
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: longhorn-iscsi-installation
+  namespace: longhorn-system
+  labels:
+    app.kubernetes.io/name: longhorn
+    app.kubernetes.io/component: iscsi-prerequisite
+spec:
+  selector:
+    matchLabels:
+      app: longhorn-iscsi-installation
+  template:
+    metadata:
+      labels:
+        app: longhorn-iscsi-installation
+    spec:
+      hostNetwork: true
+      hostPID: true
+      initContainers:
+      - name: iscsi-installation
+        image: busybox:1.35.0
+        command:
+        - /bin/sh
+        - -c
+        - |
+          # Install open-iscsi if not present
+          nsenter --mount=/host/proc/1/ns/mnt -- /bin/bash -c '
+            if ! command -v iscsid &> /dev/null; then
+              echo "Installing open-iscsi..."
+              if command -v apt-get &> /dev/null; then
+                apt-get update && apt-get install -y open-iscsi
+              elif command -v yum &> /dev/null; then
+                yum install -y iscsi-initiator-utils
+              elif command -v zypper &> /dev/null; then
+                zypper install -y open-iscsi
+              elif command -v apk &> /dev/null; then
+                apk add --no-cache open-iscsi
+              else
+                echo "Package manager not found"
+                exit 1
+              fi
+            fi
+            
+            # Enable and start iscsid service
+            systemctl enable iscsid || true
+            systemctl start iscsid || true
+            echo "iSCSI installation completed"
+          '
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: host-proc
+          mountPath: /host/proc
+          readOnly: true
+      containers:
+      - name: sleep
+        image: busybox:1.35.0
+        command: ["sleep", "infinity"]
+      volumes:
+      - name: host-proc
+        hostPath:
+          path: /proc
+      tolerations:
+      - operator: Exists
