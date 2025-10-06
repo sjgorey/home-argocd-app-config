@@ -200,6 +200,7 @@ spec:
               protocol: TCP
           args:
             - --insecure-port=9090
+            - --insecure-bind-address=0.0.0.0
             - --disable-https
             - --namespace=kubernetes-dashboard
             # Uncomment the following line to manually specify Kubernetes API server Host
