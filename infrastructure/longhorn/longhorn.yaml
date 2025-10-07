@@ -101,7 +101,6 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.7.0
-  creationTimestamp: null
   labels:
     app.kubernetes.io/name: longhorn
     app.kubernetes.io/instance: longhorn
@@ -273,7 +272,6 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.7.0
-  creationTimestamp: null
   labels:
     app.kubernetes.io/name: longhorn
     app.kubernetes.io/instance: longhorn
@@ -449,7 +447,6 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.7.0
-  creationTimestamp: null
   labels:
     app.kubernetes.io/name: longhorn
     app.kubernetes.io/instance: longhorn
@@ -609,7 +606,6 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.7.0
-  creationTimestamp: null
   labels:
     longhorn-manager: ""
   name: backupbackingimages.longhorn.io
@@ -750,7 +746,6 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.7.0
-  creationTimestamp: null
   labels:
     app.kubernetes.io/name: longhorn
     app.kubernetes.io/instance: longhorn
@@ -946,7 +941,6 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.7.0
-  creationTimestamp: null
   labels:
     app.kubernetes.io/name: longhorn
     app.kubernetes.io/instance: longhorn
@@ -1129,7 +1123,6 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.7.0
-  creationTimestamp: null
   labels:
     app.kubernetes.io/name: longhorn
     app.kubernetes.io/instance: longhorn
@@ -1296,7 +1289,6 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.7.0
-  creationTimestamp: null
   labels:
     app.kubernetes.io/name: longhorn
     app.kubernetes.io/instance: longhorn
@@ -1494,7 +1486,6 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.7.0
-  creationTimestamp: null
   labels:
     app.kubernetes.io/name: longhorn
     app.kubernetes.io/instance: longhorn
@@ -1869,7 +1860,6 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.7.0
-  creationTimestamp: null
   labels:
     app.kubernetes.io/name: longhorn
     app.kubernetes.io/instance: longhorn
@@ -2137,7 +2127,6 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.7.0
-  creationTimestamp: null
   labels:
     app.kubernetes.io/name: longhorn
     app.kubernetes.io/instance: longhorn
@@ -2388,7 +2377,6 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.7.0
-  creationTimestamp: null
   labels:
     app.kubernetes.io/name: longhorn
     app.kubernetes.io/instance: longhorn
@@ -2491,7 +2479,6 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.7.0
-  creationTimestamp: null
   labels:
     longhorn-manager: ""
   name: recurringjobs.longhorn.io
@@ -2659,7 +2646,6 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.7.0
-  creationTimestamp: null
   labels:
     app.kubernetes.io/name: longhorn
     app.kubernetes.io/instance: longhorn
@@ -2894,7 +2880,6 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.7.0
-  creationTimestamp: null
   labels:
     app.kubernetes.io/name: longhorn
     app.kubernetes.io/instance: longhorn
@@ -2986,7 +2971,6 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.7.0
-  creationTimestamp: null
   labels:
     app.kubernetes.io/name: longhorn
     app.kubernetes.io/instance: longhorn
@@ -3101,7 +3085,6 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.7.0
-  creationTimestamp: null
   labels:
     app.kubernetes.io/name: longhorn
     app.kubernetes.io/instance: longhorn
@@ -3228,7 +3211,6 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.7.0
-  creationTimestamp: null
   labels:
     app.kubernetes.io/name: longhorn
     app.kubernetes.io/instance: longhorn
@@ -3354,7 +3336,6 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.7.0
-  creationTimestamp: null
   labels:
     app.kubernetes.io/name: longhorn
     app.kubernetes.io/instance: longhorn
@@ -3482,7 +3463,6 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.7.0
-  creationTimestamp: null
   labels:
     app.kubernetes.io/name: longhorn
     app.kubernetes.io/instance: longhorn
@@ -3968,7 +3948,6 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.7.0
-  creationTimestamp: null
   labels:
     app.kubernetes.io/name: longhorn
     app.kubernetes.io/instance: longhorn
@@ -4234,7 +4213,6 @@ spec:
   - name: http
     port: 80
     targetPort: http
-    nodePort: null
 ---
 # Source: longhorn/templates/services.yaml
 apiVersion: v1
@@ -4472,6 +4450,13 @@ spec:
           - "longhornio/longhorn-manager:v1.6.0"
           - --manager-url
           - http://longhorn-backend:9500/v1
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
           env:
           - name: POD_NAMESPACE
             valueFrom:
