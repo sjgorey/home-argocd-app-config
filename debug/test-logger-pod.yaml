@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-logger
+  namespace: default
+  labels:
+    app: test-logger
+    component: logging-test
+spec:
+  containers:
+  - name: logger
+    image: busybox:1.36
+    command:
+    - /bin/sh
+    - -c
+    - |
+      counter=0
+      while true; do
+        counter=$((counter + 1))
+        timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+        echo "[$timestamp] INFO: Test log message #$counter from test-logger pod"
+        echo "[$timestamp] DEBUG: Current memory usage: $(cat /proc/meminfo | grep MemAvailable)"
+        echo "[$timestamp] WARN: This is a warning message for testing purposes"
+        if [ $((counter % 5)) -eq 0 ]; then
+          echo "[$timestamp] ERROR: Simulated error message every 5th iteration (count: $counter)"
+        fi
+        echo "[$timestamp] INFO: Pod uptime: $(cat /proc/uptime | cut -d' ' -f1) seconds"
+        echo "---"
+        sleep 30
+      done
+    resources:
+      requests:
+        cpu: "10m"
+        memory: "16Mi"
+      limits:
+        cpu: "50m"
+        memory: "32Mi"
+  restartPolicy: Always

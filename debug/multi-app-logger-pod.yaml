@@ -1,0 +1,116 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: multi-app-logger
+  namespace: default
+  labels:
+    app: multi-app-logger
+    component: logging-test
+spec:
+  containers:
+  # Web application simulator
+  - name: webapp
+    image: busybox:1.36
+    command:
+    - /bin/sh
+    - -c
+    - |
+      counter=0
+      while true; do
+        counter=$((counter + 1))
+        timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+        
+        # Simulate web requests
+        case $((counter % 8)) in
+          0|1|2|3|6|7) status=200 ;;
+          4) status=404 ;;
+          5) status=500 ;;
+        esac
+        
+        case $((counter % 4)) in
+          0) method="GET" ;;
+          1) method="POST" ;;
+          2) method="PUT" ;;
+          3) method="DELETE" ;;
+        esac
+        
+        case $((counter % 6)) in
+          0) path="/api/users" ;;
+          1) path="/api/orders" ;;
+          2) path="/health" ;;
+          3) path="/metrics" ;;
+          4) path="/login" ;;
+          5) path="/dashboard" ;;
+        esac
+        
+        response_time=$((50 + counter % 200))
+        
+        echo "webapp: [$timestamp] INFO: $method $path - $status - ${response_time}ms"
+        
+        if [ $status -eq 500 ]; then
+          echo "webapp: [$timestamp] ERROR: Internal server error on $method $path"
+        elif [ $status -eq 404 ]; then
+          echo "webapp: [$timestamp] WARN: Resource not found: $method $path"
+        fi
+        
+        sleep 15
+      done
+    resources:
+      requests:
+        cpu: "5m"
+        memory: "8Mi"
+      limits:
+        cpu: "25m"
+        memory: "16Mi"
+  
+  # Database simulator
+  - name: database
+    image: busybox:1.36
+    command:
+    - /bin/sh
+    - -c
+    - |
+      counter=0
+      while true; do
+        counter=$((counter + 1))
+        timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+        
+        case $((counter % 4)) in
+          0) operation="SELECT" ;;
+          1) operation="INSERT" ;;
+          2) operation="UPDATE" ;;
+          3) operation="DELETE" ;;
+        esac
+        
+        case $((counter % 4)) in
+          0) table="users" ;;
+          1) table="orders" ;;
+          2) table="products" ;;
+          3) table="sessions" ;;
+        esac
+        
+        duration=$((10 + counter % 100))
+        
+        echo "database: [$timestamp] INFO: $operation on $table completed in ${duration}ms"
+        
+        # Simulate slow queries occasionally
+        if [ $((counter % 10)) -eq 0 ]; then
+          echo "database: [$timestamp] WARN: Slow query detected: $operation on $table took ${duration}ms"
+        fi
+        
+        # Simulate connection issues
+        if [ $((counter % 25)) -eq 0 ]; then
+          echo "database: [$timestamp] ERROR: Connection timeout to database cluster"
+        fi
+        
+        sleep 20
+      done
+    resources:
+      requests:
+        cpu: "5m"
+        memory: "8Mi"
+      limits:
+        cpu: "25m"
+        memory: "16Mi"
+  
+  restartPolicy: Always
