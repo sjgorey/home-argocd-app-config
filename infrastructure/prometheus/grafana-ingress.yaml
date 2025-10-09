@@ -9,8 +9,8 @@ metadata:
     app.kubernetes.io/name: grafana
 data:
   # Username: admin, Password: grafana123 (change this!)
-  # Generated with: htpasswd -nb admin grafana123 | base64 -w 0
-  users: YWRtaW46JGFwcjEkYjlhTU16VzckRUh3SjdoaDlnOFNWcXJyb2xzVVJlMAo=
+  # Generated with: echo "grafana123" | openssl passwd -apr1 -stdin | base64 -w 0
+  users: YWRtaW46JGFwcjEkRWMuTnBDNGckRmZFVXo1SnMzOWUzVDJ5S3hNREZkLg==
 ---
 # Grafana Basic Auth Middleware
 apiVersion: traefik.io/v1alpha1
