@@ -1,0 +1,100 @@
+---
+# ServiceMonitor for Traefik
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: traefik-metrics
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: traefik
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: traefik
+  namespaceSelector:
+    matchNames:
+    - kube-system
+  endpoints:
+  - port: traefik
+    path: /metrics
+    interval: 30s
+---
+# ServiceMonitor for Longhorn
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: longhorn-metrics
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: longhorn
+spec:
+  selector:
+    matchLabels:
+      app: longhorn-manager
+  namespaceSelector:
+    matchNames:
+    - longhorn-system
+  endpoints:
+  - port: manager
+    path: /metrics
+    interval: 30s
+---
+# ServiceMonitor for ArgoCD
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: argocd-metrics
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: argocd
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: argocd-metrics
+  namespaceSelector:
+    matchNames:
+    - argocd
+  endpoints:
+  - port: metrics
+    path: /metrics
+    interval: 30s
+---
+# ServiceMonitor for ArgoCD Server
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: argocd-server-metrics
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: argocd-server
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: argocd-server-metrics
+  namespaceSelector:
+    matchNames:
+    - argocd
+  endpoints:
+  - port: metrics
+    path: /metrics
+    interval: 30s
+---
+# ServiceMonitor for ArgoCD Repo Server
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: argocd-repo-server-metrics
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: argocd-repo-server
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: argocd-repo-server
+  namespaceSelector:
+    matchNames:
+    - argocd
+  endpoints:
+  - port: metrics
+    path: /metrics
+    interval: 30s

@@ -1,0 +1,54 @@
+---
+# Prometheus Basic Authentication Secret
+apiVersion: v1
+kind: Secret
+metadata:
+  name: prometheus-basic-auth
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: prometheus
+data:
+  # Username: admin, Password: prometheus123 (change this!)
+  # Generated with: htpasswd -nb admin prometheus123 | base64 -w 0
+  users: YWRtaW46JGFwcjEkdGRNQm9rdjEkT2VzZFdwSWF5YlE5Y05mWGlzVi56LQo=
+---
+# Prometheus Basic Auth Middleware
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: prometheus-auth
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: prometheus
+spec:
+  basicAuth:
+    secret: prometheus-basic-auth
+---
+# Prometheus Ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: prometheus-ingress
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: prometheus
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.middlewares: monitoring-prometheus-auth@kubernetescrd
+spec:
+  tls:
+  - hosts:
+    - prometheus.example.com
+    secretName: prometheus-tls-secret
+  rules:
+  - host: prometheus.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: kube-prometheus-stack-prometheus
+            port:
+              number: 9090

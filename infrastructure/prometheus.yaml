@@ -1,0 +1,50 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: prometheus
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: prometheus
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/sjgorey/home-argocd-app-config
+    path: infrastructure/prometheus
+    targetRevision: main
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    # automated:
+    #   prune: true
+    #   selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+      - ServerSideApply=true
+      - RespectIgnoreDifferences=true
+  ignoreDifferences:
+    # Prometheus CRDs are modified by the operator after installation
+    - group: apiextensions.k8s.io
+      kind: CustomResourceDefinition
+      jsonPointers:
+        - /spec/conversion/webhook/clientConfig/caBundle
+        - /spec/preserveUnknownFields
+        - /status
+        - /metadata/annotations
+        - /metadata/labels
+    # Ignore prometheus operator managed resources
+    - group: monitoring.coreos.com
+      kind: ServiceMonitor
+      jsonPointers:
+        - /metadata/labels
+        - /metadata/annotations
+    - group: monitoring.coreos.com
+      kind: PrometheusRule
+      jsonPointers:
+        - /metadata/labels
+        - /metadata/annotations
+  revisionHistoryLimit: 3
