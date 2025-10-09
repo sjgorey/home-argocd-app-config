@@ -1,0 +1,228 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: k3s-node-alerts
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: kube-prometheus-stack
+    app.kubernetes.io/part-of: kube-prometheus-stack
+spec:
+  groups:
+  - name: k3s-node-health
+    interval: 30s
+    rules:
+    # Critical: Node completely down
+    - alert: NodeDown
+      expr: up{job="node-exporter"} == 0
+      for: 1m
+      labels:
+        severity: critical
+        team: infrastructure
+      annotations:
+        summary: "Node {{ $labels.instance }} is down"
+        description: "Node {{ $labels.instance }} has been down for more than 1 minute. This indicates a complete node failure."
+        runbook_url: "https://github.com/your-org/runbooks/node-down"
+        
+    # Critical: Node not ready in Kubernetes
+    - alert: NodeNotReady
+      expr: kube_node_status_condition{condition="Ready",status="true"} == 0
+      for: 2m
+      labels:
+        severity: critical
+        team: infrastructure
+      annotations:
+        summary: "Node {{ $labels.node }} is not ready"
+        description: "Node {{ $labels.node }} has been NotReady for more than 2 minutes. Check kubelet logs and node status."
+        
+    # Warning: High CPU usage
+    - alert: NodeHighCPUUsage
+      expr: 100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+      for: 5m
+      labels:
+        severity: warning
+        team: infrastructure
+      annotations:
+        summary: "High CPU usage on node {{ $labels.instance }}"
+        description: "Node {{ $labels.instance }} has CPU usage above 80% for more than 5 minutes. Current usage: {{ $value | humanizePercentage }}"
+        
+    # Critical: Very high CPU usage
+    - alert: NodeCriticalCPUUsage
+      expr: 100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 95
+      for: 2m
+      labels:
+        severity: critical
+        team: infrastructure
+      annotations:
+        summary: "Critical CPU usage on node {{ $labels.instance }}"
+        description: "Node {{ $labels.instance }} has CPU usage above 95% for more than 2 minutes. Current usage: {{ $value | humanizePercentage }}"
+        
+    # Warning: High memory usage
+    - alert: NodeHighMemoryUsage
+      expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 80
+      for: 5m
+      labels:
+        severity: warning
+        team: infrastructure
+      annotations:
+        summary: "High memory usage on node {{ $labels.instance }}"
+        description: "Node {{ $labels.instance }} has memory usage above 80% for more than 5 minutes. Current usage: {{ $value | humanizePercentage }}"
+        
+    # Critical: Very high memory usage
+    - alert: NodeCriticalMemoryUsage
+      expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 95
+      for: 2m
+      labels:
+        severity: critical
+        team: infrastructure
+      annotations:
+        summary: "Critical memory usage on node {{ $labels.instance }}"
+        description: "Node {{ $labels.instance }} has memory usage above 95% for more than 2 minutes. Current usage: {{ $value | humanizePercentage }}"
+        
+    # Warning: High disk usage (root filesystem)
+    - alert: NodeHighDiskUsage
+      expr: (1 - (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"})) * 100 > 80
+      for: 5m
+      labels:
+        severity: warning
+        team: infrastructure
+      annotations:
+        summary: "High disk usage on node {{ $labels.instance }}"
+        description: "Node {{ $labels.instance }} root filesystem usage above 80% for more than 5 minutes. Current usage: {{ $value | humanizePercentage }}"
+        
+    # Critical: Very high disk usage
+    - alert: NodeCriticalDiskUsage
+      expr: (1 - (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"})) * 100 > 90
+      for: 2m
+      labels:
+        severity: critical
+        team: infrastructure
+      annotations:
+        summary: "Critical disk usage on node {{ $labels.instance }}"
+        description: "Node {{ $labels.instance }} root filesystem usage above 90% for more than 2 minutes. Current usage: {{ $value | humanizePercentage }}"
+        
+    # Critical: Disk predicted to fill soon
+    - alert: NodeDiskWillFillIn4Hours
+      expr: predict_linear(node_filesystem_avail_bytes{mountpoint="/"}[1h], 4*3600) < 0
+      for: 5m
+      labels:
+        severity: critical
+        team: infrastructure
+      annotations:
+        summary: "Node {{ $labels.instance }} disk will fill in 4 hours"
+        description: "Based on current usage trends, node {{ $labels.instance }} root filesystem will be full in approximately 4 hours."
+        
+    # Warning: High load average
+    - alert: NodeHighLoadAverage
+      expr: node_load1 / count by (instance) (node_cpu_seconds_total{mode="idle"}) > 1.5
+      for: 5m
+      labels:
+        severity: warning
+        team: infrastructure
+      annotations:
+        summary: "High load average on node {{ $labels.instance }}"
+        description: "Node {{ $labels.instance }} has load average above 1.5x CPU count for more than 5 minutes. Current load: {{ $value }}"
+        
+    # Critical: Kubelet down
+    - alert: KubeletDown
+      expr: up{job="kubelet"} == 0
+      for: 1m
+      labels:
+        severity: critical
+        team: infrastructure
+      annotations:
+        summary: "Kubelet is down on node {{ $labels.instance }}"
+        description: "Kubelet has been down for more than 1 minute on node {{ $labels.instance }}. Node will become NotReady."
+        
+    # Warning: Node clock skew
+    - alert: NodeClockSkew
+      expr: abs(node_time_seconds - time()) > 60
+      for: 2m
+      labels:
+        severity: warning
+        team: infrastructure
+      annotations:
+        summary: "Clock skew detected on node {{ $labels.instance }}"
+        description: "Node {{ $labels.instance }} clock is skewed by {{ $value }} seconds from Prometheus server time."
+        
+    # Warning: Too many restarts
+    - alert: NodeHighRestartRate
+      expr: increase(node_boot_time_seconds[1h]) > 0
+      for: 0m
+      labels:
+        severity: warning
+        team: infrastructure
+      annotations:
+        summary: "Node {{ $labels.instance }} has restarted"
+        description: "Node {{ $labels.instance }} has restarted within the last hour. Check system logs for the cause."
+        
+  - name: k3s-specific-alerts
+    interval: 30s
+    rules:
+    # K3s server component health
+    - alert: K3sServerDown
+      expr: up{job="kubernetes-apiservers"} == 0
+      for: 1m
+      labels:
+        severity: critical
+        team: infrastructure
+      annotations:
+        summary: "K3s API server is down"
+        description: "K3s API server has been unreachable for more than 1 minute. Cluster control plane is affected."
+        
+    # etcd health (if using external etcd)
+    - alert: EtcdDown
+      expr: up{job="etcd"} == 0
+      for: 1m
+      labels:
+        severity: critical
+        team: infrastructure
+      annotations:
+        summary: "etcd is down"
+        description: "etcd has been down for more than 1 minute. This will cause cluster-wide issues."
+        
+    # Too many pods on a node
+    - alert: NodeTooManyPods
+      expr: kube_node_status_allocatable{resource="pods"} - kube_node_status_capacity{resource="pods"} < 5
+      for: 5m
+      labels:
+        severity: warning
+        team: infrastructure
+      annotations:
+        summary: "Node {{ $labels.node }} is running too many pods"
+        description: "Node {{ $labels.node }} has fewer than 5 pod slots available. Consider scheduling workloads elsewhere."
+        
+    # Node has unschedulable taints
+    - alert: NodeUnschedulable
+      expr: kube_node_spec_unschedulable == 1
+      for: 5m
+      labels:
+        severity: warning
+        team: infrastructure
+      annotations:
+        summary: "Node {{ $labels.node }} is marked unschedulable"
+        description: "Node {{ $labels.node }} has been marked as unschedulable for more than 5 minutes."
+        
+  - name: network-connectivity
+    interval: 30s
+    rules:
+    # Network connectivity issues
+    - alert: NodeNetworkInterfaceDown
+      expr: node_network_up == 0
+      for: 1m
+      labels:
+        severity: warning
+        team: infrastructure
+      annotations:
+        summary: "Network interface {{ $labels.device }} is down on node {{ $labels.instance }}"
+        description: "Network interface {{ $labels.device }} has been down for more than 1 minute on node {{ $labels.instance }}."
+        
+    # High network errors
+    - alert: NodeNetworkHighErrors
+      expr: rate(node_network_receive_errs_total[5m]) > 10
+      for: 2m
+      labels:
+        severity: warning
+        team: infrastructure
+      annotations:
+        summary: "High network errors on node {{ $labels.instance }}"
+        description: "Node {{ $labels.instance }} interface {{ $labels.device }} is experiencing high error rates: {{ $value }} errors/sec."
