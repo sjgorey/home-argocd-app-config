@@ -1,0 +1,184 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: alertmanager-config
+  namespace: monitoring
+type: Opaque
+stringData:
+  alertmanager.yml: |
+    global:
+      # Global SMTP configuration (update with your details)
+      smtp_smarthost: 'smtp-server.maine.rr.com'
+      smtp_from: 'gorco@maine.rr.com'
+      smtp_auth_username: 'gorco@maine.rr.com'
+      smtp_auth_password: 'G0rco.c0m'
+      smtp_require_tls: true
+      
+      # Slack webhook URL (update with your webhook)
+      #slack_api_url: 'https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK'
+      
+    # Inhibition rules - prevent noise from related alerts
+    inhibit_rules:
+    - source_match:
+        severity: 'critical'
+      target_match:
+        severity: 'warning'
+      equal: ['instance', 'node']
+      
+    # Route configuration
+    route:
+      group_by: ['alertname', 'cluster', 'service']
+      group_wait: 10s
+      group_interval: 10s
+      repeat_interval: 12h
+      receiver: 'default'
+      routes:
+      
+      # Critical node alerts - immediate notification
+      - match:
+          severity: critical
+          team: infrastructure
+        receiver: 'critical-infrastructure'
+        group_wait: 5s
+        repeat_interval: 5m
+        
+      # Warning node alerts - less frequent notifications
+      - match:
+          severity: warning
+          team: infrastructure
+        receiver: 'warning-infrastructure'
+        group_wait: 2m
+        repeat_interval: 30m
+        
+      # Node down alerts - immediate and persistent
+      - match:
+          alertname: NodeDown
+        receiver: 'node-down-emergency'
+        group_wait: 0s
+        repeat_interval: 2m
+        
+      # Kubelet down alerts
+      - match:
+          alertname: KubeletDown
+        receiver: 'critical-infrastructure'
+        group_wait: 30s
+        repeat_interval: 5m
+    
+    # Notification receivers
+    receivers:
+    
+    # Default receiver (low priority)
+    - name: 'default'
+      slack_configs:
+      - channel: '#monitoring'
+        title: 'K3s Cluster Alert'
+        text: |
+          {{ range .Alerts }}
+          *Alert:* {{ .Annotations.summary }}
+          *Description:* {{ .Annotations.description }}
+          *Severity:* {{ .Labels.severity }}
+          {{ end }}
+        
+    # Critical infrastructure alerts
+    - name: 'critical-infrastructure'
+      email_configs:
+      - to: 'admin@yourdomain.com'
+        subject: '🚨 CRITICAL: K3s Node Alert - {{ .GroupLabels.alertname }}'
+        body: |
+          CRITICAL ALERT - Immediate attention required!
+          
+          {{ range .Alerts }}
+          Alert: {{ .Annotations.summary }}
+          Description: {{ .Annotations.description }}
+          Node/Instance: {{ .Labels.instance }}
+          Started: {{ .StartsAt.Format "2006-01-02 15:04:05" }}
+          
+          {{ if .Annotations.runbook_url }}
+          Runbook: {{ .Annotations.runbook_url }}
+          {{ end }}
+          {{ end }}
+          
+          Please investigate immediately.
+          
+      slack_configs:
+      - channel: '#alerts-critical'
+        username: 'AlertManager'
+        color: 'danger'
+        title: '🚨 CRITICAL K3s Alert'
+        text: |
+          {{ range .Alerts }}
+          *Alert:* {{ .Annotations.summary }}
+          *Description:* {{ .Annotations.description }}
+          *Node:* {{ .Labels.instance }}
+          *Started:* {{ .StartsAt.Format "15:04:05" }}
+          {{ end }}
+        actions:
+        - type: button
+          text: 'View in Grafana'
+          url: 'https://grafana.example.com/d/node-health'
+          
+    # Warning infrastructure alerts  
+    - name: 'warning-infrastructure'
+      slack_configs:
+      - channel: '#monitoring'
+        username: 'AlertManager'
+        color: 'warning'
+        title: '⚠️ K3s Warning Alert'
+        text: |
+          {{ range .Alerts }}
+          *Alert:* {{ .Annotations.summary }}
+          *Description:* {{ .Annotations.description }}
+          *Node:* {{ .Labels.instance }}
+          {{ end }}
+          
+    # Emergency node down alerts (multiple channels)
+    - name: 'node-down-emergency'
+      email_configs:
+      - to: 'steve.gorey+k3s@gmail.com'
+        subject: '🔥 EMERGENCY: K3s Node DOWN - {{ .GroupLabels.instance }}'
+        body: |
+          EMERGENCY - NODE DOWN!
+          
+          {{ range .Alerts }}
+          Node: {{ .Labels.instance }}
+          Alert: {{ .Annotations.summary }}
+          Description: {{ .Annotations.description }}
+          Started: {{ .StartsAt.Format "2006-01-02 15:04:05" }}
+          {{ end }}
+          
+          This requires IMMEDIATE investigation!
+          
+      slack_configs:
+      - channel: '#alerts-critical'
+        username: 'AlertManager'
+        color: 'danger'
+        title: '🔥 EMERGENCY: Node DOWN!'
+        text: |
+          {{ range .Alerts }}
+          *NODE DOWN:* {{ .Labels.instance }}
+          *Since:* {{ .StartsAt.Format "15:04:05" }}
+          *Description:* {{ .Annotations.description }}
+          {{ end }}
+          @channel - Immediate attention required!
+          
+      # Optional: webhook for external systems
+      webhook_configs:
+      - url: 'https://your-webhook-endpoint.com/k3s-alerts'
+        send_resolved: true
+        
+---
+# Patch the existing AlertManager to use our custom config
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: alertmanager-config-patch
+  namespace: monitoring
+data:
+  patch.yaml: |
+    spec:
+      alerting:
+        alertmanagers:
+        - static_configs:
+          - targets:
+            - alertmanager-operated:9093
+      configSecret: alertmanager-config
