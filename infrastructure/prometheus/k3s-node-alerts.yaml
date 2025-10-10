@@ -206,16 +206,16 @@ spec:
   - name: network-connectivity
     interval: 30s
     rules:
-    # Network connectivity issues
+    # Network connectivity issues - exclude common non-critical interfaces
     - alert: NodeNetworkInterfaceDown
-      expr: node_network_up == 0
-      for: 1m
+      expr: node_network_up == 0 and node_network_info{device!~"lo|flannel\\.1|docker0|br-.*|veth.*|wl.*|enp.*"} > 0
+      for: 2m
       labels:
         severity: warning
         team: infrastructure
       annotations:
-        summary: "Network interface {{ $labels.device }} is down on node {{ $labels.instance }}"
-        description: "Network interface {{ $labels.device }} has been down for more than 1 minute on node {{ $labels.instance }}."
+        summary: "Critical network interface {{ $labels.device }} is down on node {{ $labels.instance }}"
+        description: "Network interface {{ $labels.device }} has been down for more than 2 minutes on node {{ $labels.instance }}. This may affect cluster connectivity."
         
     # High network errors
     - alert: NodeNetworkHighErrors
