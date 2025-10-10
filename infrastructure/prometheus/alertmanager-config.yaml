@@ -7,8 +7,8 @@ type: Opaque
 stringData:
   alertmanager.yml: |
     global:
-      # Global SMTP configuration (update with your details)
-      smtp_smarthost: 'smtp-server.maine.rr.com'
+      # Global SMTP configuration
+      smtp_smarthost: 'smtp-server.maine.rr.com:587'
       smtp_from: 'gorco@maine.rr.com'
       smtp_auth_username: 'gorco@maine.rr.com'
       smtp_auth_password: 'G0rco.c0m'
@@ -82,7 +82,7 @@ stringData:
     # Critical infrastructure alerts
     - name: 'critical-infrastructure'
       email_configs:
-      - to: 'admin@yourdomain.com'
+      - to: 'gorco@maine.rr.com'
         subject: '🚨 CRITICAL: K3s Node Alert - {{ .GroupLabels.alertname }}'
         body: |
           CRITICAL ALERT - Immediate attention required!
@@ -119,6 +119,19 @@ stringData:
           
     # Warning infrastructure alerts  
     - name: 'warning-infrastructure'
+      email_configs:
+      - to: 'gorco@maine.rr.com'
+        subject: '⚠️ WARNING: K3s Node Alert - {{ .GroupLabels.alertname }}'
+        body: |
+          Warning Alert - Please review when convenient
+          
+          {{ range .Alerts }}
+          Alert: {{ .Annotations.summary }}
+          Description: {{ .Annotations.description }}
+          Node/Instance: {{ .Labels.instance }}
+          Started: {{ .StartsAt.Format "2006-01-02 15:04:05" }}
+          {{ end }}
+          
       slack_configs:
       - channel: '#monitoring'
         username: 'AlertManager'
@@ -134,7 +147,7 @@ stringData:
     # Emergency node down alerts (multiple channels)
     - name: 'node-down-emergency'
       email_configs:
-      - to: 'steve.gorey+k3s@gmail.com'
+      - to: 'gorco@maine.rr.com'
         subject: '🔥 EMERGENCY: K3s Node DOWN - {{ .GroupLabels.instance }}'
         body: |
           EMERGENCY - NODE DOWN!

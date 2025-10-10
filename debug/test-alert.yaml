@@ -1,0 +1,24 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: smtp-test-alert
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: kube-prometheus-stack
+    app.kubernetes.io/part-of: kube-prometheus-stack
+    release: kube-prometheus-stack
+spec:
+  groups:
+  - name: smtp-test
+    interval: 30s
+    rules:
+    - alert: SMTPTestAlert
+      expr: vector(1)  # Always fires
+      for: 1m
+      labels:
+        severity: warning
+        team: infrastructure
+        test: "true"
+      annotations:
+        summary: "SMTP Test Alert - This is a test"
+        description: "This is a test alert to verify SMTP configuration is working. If you receive this email, your AlertManager SMTP setup is correct."
