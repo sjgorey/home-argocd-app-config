@@ -23,7 +23,7 @@ spec:
   receivers:
   - name: 'email-alerts'
     emailConfigs:
-    - to: 'gorco@maine.rr.com'
+    - to: 'steve.gorey+k3s@gmail.com'
       from: 'gorco@maine.rr.com'
       smarthost: 'mail.roadrunner.com:587'
       authUsername: 'gorco@maine.rr.com'
@@ -45,7 +45,7 @@ spec:
 
   - name: 'smtp-test'
     emailConfigs:
-    - to: 'gorco@maine.rr.com'
+    - to: 'steve.gorey+k3s@gmail.com'
       from: 'gorco@maine.rr.com'
       smarthost: 'mail.roadrunner.com:587'
       authUsername: 'gorco@maine.rr.com'
