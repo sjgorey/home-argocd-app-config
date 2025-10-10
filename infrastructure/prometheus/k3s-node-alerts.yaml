@@ -114,14 +114,14 @@ spec:
         
     # Warning: High load average
     - alert: NodeHighLoadAverage
-      expr: node_load1 / count by (instance) (node_cpu_seconds_total{mode="idle"}) > 1.5
-      for: 5m
+      expr: node_load1 / count by (instance) (node_cpu_seconds_total{mode="idle"}) > 2.0
+      for: 10m
       labels:
         severity: warning
         team: infrastructure
       annotations:
         summary: "High load average on node {{ $labels.instance }}"
-        description: "Node {{ $labels.instance }} has load average above 1.5x CPU count for more than 5 minutes. Current load: {{ $value }}"
+        description: "Node {{ $labels.instance }} has load average above 2.0x CPU count for more than 10 minutes. Current load: {{ $value }}"
         
     # Critical: Kubelet down
     - alert: KubeletDown
@@ -145,16 +145,16 @@ spec:
         summary: "Clock skew detected on node {{ $labels.instance }}"
         description: "Node {{ $labels.instance }} clock is skewed by {{ $value }} seconds from Prometheus server time."
         
-    # Warning: Too many restarts
-    - alert: NodeHighRestartRate
-      expr: increase(node_boot_time_seconds[1h]) > 0
-      for: 0m
-      labels:
-        severity: warning
-        team: infrastructure
-      annotations:
-        summary: "Node {{ $labels.instance }} has restarted"
-        description: "Node {{ $labels.instance }} has restarted within the last hour. Check system logs for the cause."
+    # Warning: Too many restarts (disabled for home lab)
+    # - alert: NodeHighRestartRate
+    #   expr: increase(node_boot_time_seconds[1h]) > 0
+    #   for: 0m
+    #   labels:
+    #     severity: warning
+    #     team: infrastructure
+    #   annotations:
+    #     summary: "Node {{ $labels.instance }} has restarted"
+    #     description: "Node {{ $labels.instance }} has restarted within the last hour. Check system logs for the cause."
         
   - name: k3s-specific-alerts
     interval: 30s
@@ -183,14 +183,14 @@ spec:
         
     # Too many pods on a node
     - alert: NodeTooManyPods
-      expr: kube_node_status_allocatable{resource="pods"} - kube_node_status_capacity{resource="pods"} < 5
-      for: 5m
+      expr: kube_node_status_allocatable{resource="pods"} - kube_node_status_capacity{resource="pods"} < 2
+      for: 10m
       labels:
         severity: warning
         team: infrastructure
       annotations:
         summary: "Node {{ $labels.node }} is running too many pods"
-        description: "Node {{ $labels.node }} has fewer than 5 pod slots available. Consider scheduling workloads elsewhere."
+        description: "Node {{ $labels.node }} has fewer than 2 pod slots available. Consider scheduling workloads elsewhere."
         
     # Node has unschedulable taints
     - alert: NodeUnschedulable
