@@ -1,0 +1,68 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: k3s-smtp-config
+  namespace: monitoring
+  labels:
+    alertmanagerConfig: main
+spec:
+  route:
+    groupBy: ['alertname']
+    groupWait: 10s
+    groupInterval: 10s
+    repeatInterval: 12h
+    receiver: 'email-alerts'
+    routes:
+    - matchers:
+      - name: test
+        value: "true"
+      receiver: 'smtp-test'
+      groupWait: 10s
+      repeatInterval: 1m
+
+  receivers:
+  - name: 'email-alerts'
+    emailConfigs:
+    - to: 'gorco@maine.rr.com'
+      from: 'gorco@maine.rr.com'
+      smarthost: 'mail.roadrunner.com:587'
+      authUsername: 'gorco@maine.rr.com'
+      authPassword:
+        name: smtp-auth
+        key: password
+      requireTLS: true
+      headers:
+      - key: 'Subject'
+        value: 'K3s Alert - {{ .GroupLabels.alertname }}'
+      text: |
+        Alert Details:
+        {{ range .Alerts }}
+        Alert: {{ .Annotations.summary }}
+        Description: {{ .Annotations.description }}
+        Node: {{ .Labels.instance }}
+        Started: {{ .StartsAt.Format "2006-01-02 15:04:05" }}
+        {{ end }}
+
+  - name: 'smtp-test'
+    emailConfigs:
+    - to: 'gorco@maine.rr.com'
+      from: 'gorco@maine.rr.com'
+      smarthost: 'mail.roadrunner.com:587'
+      authUsername: 'gorco@maine.rr.com'
+      authPassword:
+        name: smtp-auth
+        key: password
+      requireTLS: true
+      headers:
+      - key: 'Subject'
+        value: '✅ SMTP Test - AlertManager Working'
+      text: |
+        This is a test email from your K3s AlertManager.
+        
+        If you receive this email, your SMTP configuration is working correctly!
+        
+        {{ range .Alerts }}
+        Test Alert: {{ .Annotations.summary }}
+        Description: {{ .Annotations.description }}
+        Time: {{ .StartsAt.Format "2006-01-02 15:04:05" }}
+        {{ end }}
