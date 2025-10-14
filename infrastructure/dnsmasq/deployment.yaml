@@ -1,0 +1,117 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dnsmasq
+  namespace: default
+  labels:
+    app: dnsmasq
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: dnsmasq
+  template:
+    metadata:
+      labels:
+        app: dnsmasq
+    spec:
+      # Anti-affinity to spread pods across nodes
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - dnsmasq
+              topologyKey: kubernetes.io/hostname
+      
+      # Service account (if needed for future RBAC)
+      serviceAccountName: default
+      
+      containers:
+      - name: dnsmasq
+        image: dockurr/dnsmasq:latest
+        imagePullPolicy: Always
+        
+        # Resource limits for stability
+        resources:
+          limits:
+            cpu: 100m
+            memory: 128Mi
+          requests:
+            cpu: 50m
+            memory: 64Mi
+        
+        # DNS ports
+        ports:
+        - name: dns-tcp
+          containerPort: 53
+          protocol: TCP
+        - name: dns-udp
+          containerPort: 53
+          protocol: UDP
+        
+        # Health checks
+        livenessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - "nslookup google.com 127.0.0.1 > /dev/null"
+          initialDelaySeconds: 10
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 3
+        
+        readinessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - "nslookup google.com 127.0.0.1 > /dev/null"
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 2
+        
+        # Volume mounts
+        volumeMounts:
+        - name: config
+          mountPath: /etc/dnsmasq.conf
+          subPath: dnsmasq.conf
+          readOnly: true
+        - name: cache-storage
+          mountPath: /var/lib/dnsmasq
+        - name: log-storage
+          mountPath: /var/log
+        
+        # Environment variables
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+      
+      # Volumes
+      volumes:
+      - name: config
+        configMap:
+          name: dnsmasq-config
+      - name: cache-storage
+        persistentVolumeClaim:
+          claimName: dnsmasq-cache-pvc
+      - name: log-storage
+        emptyDir: {}

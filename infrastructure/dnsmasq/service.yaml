@@ -1,0 +1,75 @@
+---
+# LoadBalancer Service (primary - requires MetalLB or similar)
+apiVersion: v1
+kind: Service
+metadata:
+  name: dnsmasq-lb
+  namespace: default
+  labels:
+    app: dnsmasq
+  annotations:
+    # MetalLB annotations (if using MetalLB)
+    metallb.universe.tf/address-pool: default
+spec:
+  type: LoadBalancer
+  loadBalancerIP: 192.168.1.53  # Request specific IP (customize)
+  selector:
+    app: dnsmasq
+  ports:
+  - name: dns-tcp
+    port: 53
+    targetPort: 53
+    protocol: TCP
+  - name: dns-udp
+    port: 53
+    targetPort: 53
+    protocol: UDP
+  sessionAffinity: None
+
+---
+# NodePort Service (fallback for direct node access)
+apiVersion: v1
+kind: Service
+metadata:
+  name: dnsmasq-nodeport
+  namespace: default
+  labels:
+    app: dnsmasq
+spec:
+  type: NodePort
+  selector:
+    app: dnsmasq
+  ports:
+  - name: dns-tcp
+    port: 53
+    targetPort: 53
+    nodePort: 30053
+    protocol: TCP
+  - name: dns-udp
+    port: 53
+    targetPort: 53
+    nodePort: 30053
+    protocol: UDP
+
+---
+# ClusterIP Service (internal cluster access)
+apiVersion: v1
+kind: Service
+metadata:
+  name: dnsmasq
+  namespace: default
+  labels:
+    app: dnsmasq
+spec:
+  type: ClusterIP
+  selector:
+    app: dnsmasq
+  ports:
+  - name: dns-tcp
+    port: 53
+    targetPort: 53
+    protocol: TCP
+  - name: dns-udp
+    port: 53
+    targetPort: 53
+    protocol: UDP

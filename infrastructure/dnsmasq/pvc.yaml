@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: dnsmasq-cache-pvc
+  namespace: default
+  labels:
+    app: dnsmasq
+spec:
+  accessModes:
+    - ReadWriteMany  # Allows multiple pods to share cache
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: longhorn  # Use your Longhorn storage
