@@ -4,37 +4,41 @@ This directory contains a high-availability dnsmasq deployment for Kubernetes wi
 
 ## Features
 
-- **High Availability**: 3 replicas with anti-affinity across nodes
-- **Persistence**: Shared cache storage using Longhorn
+- **High Availability**: 3 replicas with anti-affinity across nodes (currently 2 running on x86_64 nodes)
+- **Architecture Compatibility**: Uses jpillora/dnsmasq image which runs on x86_64 nodes only
+- **Persistent Cache**: Uses emptyDir volumes (previous Longhorn PVC had mounting issues)
 - **LAN Access**: Multiple service types for flexible access
 - **Health Checks**: Liveness and readiness probes
 - **Network Security**: NetworkPolicy for controlled access
-- **Local DNS**: Pre-configured with cluster service addresses
+- **Wildcard DNS**: Pre-configured with wildcard *.example.com resolution
 
 ## Architecture
 
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │   dnsmasq-1     │    │   dnsmasq-2     │    │   dnsmasq-3     │
-│   (node-1)      │    │   (node-2)      │    │   (node-3)      │
+│ (thinkpad x86)  │    │ (shuttle x86)   │    │ (odroid ARM)    │
+│    RUNNING      │    │    RUNNING      │    │  CRASH LOOP     │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
-         │                       │                       │
+         │                       │                       ╳
          └───────────────────────┼───────────────────────┘
                                  │
          ┌───────────────────────┴───────────────────────┐
          │                Services                       │
-         │  • LoadBalancer: 192.168.1.53:53            │
+         │  • LoadBalancer: 192.168.1.12:53            │
          │  • NodePort: <any-node>:30053                │
          │  • ClusterIP: Internal cluster access        │
          └───────────────────────────────────────────────┘
 ```
 
+**Current Status**: 2/3 pods running successfully on x86_64 nodes. The ARM-based Odroid pod fails due to architecture incompatibility with the jpillora/dnsmasq image.
+
 ## Access Methods
 
 ### Primary (LoadBalancer)
-- **IP**: `192.168.1.53:53`
-- **Requires**: MetalLB or similar LoadBalancer implementation
-- **Usage**: Configure LAN devices to use `192.168.1.53` as DNS
+- **IP**: `192.168.1.12:53`
+- **Requires**: MetalLB LoadBalancer implementation
+- **Usage**: Configure LAN devices to use `192.168.1.12` as DNS
 
 ### Fallback (NodePort)
 - **Ports**: `<any-node-ip>:30053`
@@ -56,7 +60,8 @@ The dnsmasq configuration includes:
 - **Cache Size**: 1000 entries
 - **Upstream DNS**: Google (8.8.8.8, 8.8.4.4) and Cloudflare (1.1.1.1, 1.0.0.1)
 - **Local Domain**: `home.local`
-- **Cluster Services**: Pre-configured addresses for ArgoCD, Grafana, etc.
+- **Wildcard DNS**: `*.example.com` resolves to cluster nodes (192.168.1.5, 192.168.1.21-24)
+- **Image**: `jpillora/dnsmasq:latest` (x86_64 architecture only)
 
 ### Custom DNS Entries
 Edit `configmap.yaml` to add your local DNS entries:
@@ -66,13 +71,21 @@ Edit `configmap.yaml` to add your local DNS entries:
 address=/router.home.local/192.168.1.1
 address=/nas.home.local/192.168.1.100
 address=/printer.home.local/192.168.1.200
+
+# Wildcard for cluster services (already configured)
+address=/example.com/192.168.1.5
+address=/example.com/192.168.1.21
+address=/example.com/192.168.1.22
+address=/example.com/192.168.1.23
+address=/example.com/192.168.1.24
 ```
 
 ### Resource Usage
 Each dnsmasq pod uses:
 - **CPU**: 50m request, 100m limit
 - **Memory**: 64Mi request, 128Mi limit
-- **Storage**: 1Gi shared cache (Longhorn)
+- **Storage**: emptyDir volumes (local to each pod)
+- **Architecture**: x86_64 only (ARM nodes will experience CrashLoopBackOff)
 
 ## Deployment
 
@@ -103,11 +116,12 @@ kubectl run -it --rm dns-test --image=busybox --restart=Never -- nslookup google
 # Test with NodePort
 nslookup google.com 192.168.1.5:30053
 
-# Test with LoadBalancer (if configured)
-nslookup google.com 192.168.1.53
+# Test with LoadBalancer
+nslookup google.com 192.168.1.12
 
-# Test local resolution
-nslookup argocd.example.com 192.168.1.53
+# Test wildcard resolution
+nslookup argocd.example.com 192.168.1.12
+nslookup grafana.example.com 192.168.1.12
 ```
 
 ### From cluster
@@ -135,12 +149,13 @@ kubectl logs -l app=dnsmasq | grep query
 
 ## High Availability Features
 
-1. **Multiple Replicas**: 3 pods spread across different nodes
+1. **Multiple Replicas**: 3 pods spread across different nodes (2 running on x86_64)
 2. **Anti-Affinity**: Ensures pods don't run on the same node
 3. **Rolling Updates**: Updates happen one pod at a time
 4. **Health Checks**: Automatic restart of failing pods
-5. **Shared Cache**: All pods share the same cache storage
+5. **Individual Cache**: Each pod maintains its own cache (emptyDir)
 6. **Multiple Access Methods**: LoadBalancer + NodePort for redundancy
+7. **Architecture Awareness**: Currently optimized for x86_64 nodes
 
 ## Customization
 
@@ -156,8 +171,9 @@ kubectl logs -l app=dnsmasq | grep query
 
 1. **LoadBalancer Pending**: Install MetalLB or use NodePort
 2. **DNS Resolution Fails**: Check upstream DNS servers
-3. **Pod Crashes**: Review resource limits and logs
-4. **Cache Issues**: Restart pods to clear cache
+3. **Pod Crashes on ARM**: jpillora/dnsmasq only supports x86_64 architecture
+4. **Cache Issues**: Restart pods to clear individual caches
+5. **Partial Deployment**: 2/3 pods running is normal due to ARM incompatibility
 
 ### Useful Commands
 ```bash
