@@ -33,24 +33,44 @@ This directory contains a high-availability dnsmasq deployment for Kubernetes wi
 
 **Current Status**: 2/3 pods running successfully on x86_64 nodes. The ARM-based Odroid pod fails due to architecture incompatibility with the jpillora/dnsmasq image.
 
-## Access Methods
+## Router DNS Configuration
 
-### Primary (LoadBalancer)
-- **IP**: `192.168.1.12:53`
-- **Requires**: MetalLB LoadBalancer implementation
-- **Usage**: Configure LAN devices to use `192.168.1.12` as DNS
+### Quick Setup for Standard Port 53
 
-### Fallback (NodePort)
-- **Ports**: `<any-node-ip>:30053`
-- **Examples**: 
-  - `192.168.1.5:30053` (thinkpad)
-  - `192.168.1.21:30053` (odroid1)
-  - `192.168.1.22:30053` (odroid2)
-- **Usage**: Configure LAN devices with multiple DNS entries
+Since most routers only support standard DNS port 53, use the included port forwarding script:
 
-### Internal (ClusterIP)
-- **Service**: `dnsmasq.default.svc.cluster.local:53`
-- **Usage**: For cluster-internal DNS resolution
+#### 1. Copy Scripts to Nodes
+```bash
+# Copy the setup and test scripts to your stable x86_64 nodes
+scp infrastructure/dnsmasq/dns-port-forward.sh sgorey@192.168.1.5:/tmp/
+scp infrastructure/dnsmasq/test-dns-forwarding.sh sgorey@192.168.1.5:/tmp/
+
+# Repeat for other nodes
+scp infrastructure/dnsmasq/dns-port-forward.sh sgorey@192.168.1.12:/tmp/
+scp infrastructure/dnsmasq/dns-port-forward.sh sgorey@192.168.1.6:/tmp/
+```
+
+#### 2. Setup Port Forwarding
+```bash
+# SSH to each node and setup port forwarding
+ssh sgorey@192.168.1.5
+sudo /tmp/dns-port-forward.sh setup
+
+# Test the setup
+sudo /tmp/test-dns-forwarding.sh
+```
+
+#### 3. Configure Your Router
+Once testing passes, configure your router DNS servers:
+- **Primary DNS**: `192.168.1.5`
+- **Secondary DNS**: `192.168.1.12`
+- **Tertiary DNS**: `192.168.1.6` (optional)
+
+### Alternative: NodePort with Custom Port
+If your router supports custom DNS ports, you can skip the port forwarding and use:
+- **Primary**: `192.168.1.5:30053`
+- **Secondary**: `192.168.1.12:30053`
+- **Tertiary**: `192.168.1.6:30053`
 
 ## Configuration
 
@@ -113,15 +133,31 @@ kubectl run -it --rm dns-test --image=busybox --restart=Never -- nslookup google
 
 ### From LAN devices
 ```bash
-# Test with NodePort
-nslookup google.com 192.168.1.5:30053
+# Test with standard port 53 (after port forwarding setup)
+nslookup google.com 192.168.1.5
+dig @192.168.1.5 prometheus.example.com
 
-# Test with LoadBalancer
-nslookup google.com 192.168.1.12
+# Test with NodePort (works without port forwarding)
+nslookup google.com 192.168.1.5:30053
+dig @192.168.1.5 -p 30053 grafana.example.com
 
 # Test wildcard resolution
-nslookup argocd.example.com 192.168.1.12
+nslookup argocd.example.com 192.168.1.5
 nslookup grafana.example.com 192.168.1.12
+```
+
+### Testing Port Forwarding
+```bash
+# After setting up port forwarding on a node, test it:
+ssh sgorey@192.168.1.5
+sudo /tmp/test-dns-forwarding.sh
+
+# This will verify:
+# ✅ iptables rules are in place
+# ✅ NodePort 30053 responds
+# ✅ Port 53 forwarding works
+# ✅ Wildcard DNS resolves correctly
+```
 ```
 
 ### From cluster
