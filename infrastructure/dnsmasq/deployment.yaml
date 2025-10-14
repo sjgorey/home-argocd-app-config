@@ -39,7 +39,7 @@ spec:
       
       containers:
       - name: dnsmasq
-        image: dockurr/dnsmasq:latest
+        image: jpillora/dnsmasq:latest
         imagePullPolicy: Always
         
         # Resource limits for stability
