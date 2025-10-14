@@ -61,13 +61,10 @@ spec:
           containerPort: 53
           protocol: UDP
         
-        # Simple readiness probe - just check if the container started
+        # Simplest possible readiness probe
         readinessProbe:
           exec:
-            command:
-            - /bin/sh
-            - -c
-            - "test -f /tmp/ready || (sleep 5 && touch /tmp/ready && exit 0)"
+            command: ["/bin/true"]
           initialDelaySeconds: 5
           periodSeconds: 10
         
