@@ -61,24 +61,25 @@ spec:
           containerPort: 53
           protocol: UDP
         
-        livenessProbe:
-          exec:
-            command:
-            - /bin/sh
-            - -c
-            - "pgrep dnsmasq > /dev/null"
-          initialDelaySeconds: 15
-          periodSeconds: 30
-          timeoutSeconds: 5
-          failureThreshold: 3
-        
-        readinessProbe:
-          tcpSocket:
-            port: 53
-          initialDelaySeconds: 10
-          periodSeconds: 5
-          timeoutSeconds: 3
-          failureThreshold: 2
+        # Temporarily disable health checks to troubleshoot
+        # livenessProbe:
+        #   exec:
+        #     command:
+        #     - /bin/sh
+        #     - -c
+        #     - "pgrep dnsmasq > /dev/null"
+        #   initialDelaySeconds: 15
+        #   periodSeconds: 30
+        #   timeoutSeconds: 5
+        #   failureThreshold: 3
+        # 
+        # readinessProbe:
+        #   tcpSocket:
+        #     port: 53
+        #   initialDelaySeconds: 10
+        #   periodSeconds: 5
+        #   timeoutSeconds: 3
+        #   failureThreshold: 2
         
         volumeMounts:
         - name: config
