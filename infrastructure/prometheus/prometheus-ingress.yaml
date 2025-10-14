@@ -33,14 +33,9 @@ metadata:
   labels:
     app.kubernetes.io/name: prometheus
   annotations:
-    traefik.ingress.kubernetes.io/router.entrypoints: websecure
-    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.entrypoints: web
     traefik.ingress.kubernetes.io/router.middlewares: monitoring-prometheus-auth@kubernetescrd
 spec:
-  tls:
-  - hosts:
-    - prometheus.example.com
-    secretName: prometheus-tls-secret
   rules:
   - host: prometheus.example.com
     http:

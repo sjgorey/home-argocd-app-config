@@ -8,8 +8,7 @@ metadata:
     app.kubernetes.io/component: ingress
   annotations:
     kubernetes.io/ingress.class: traefik
-    traefik.ingress.kubernetes.io/router.entrypoints: websecure
-    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.entrypoints: web
     # Enable basic authentication for Longhorn UI
     traefik.ingress.kubernetes.io/router.middlewares: longhorn-system-longhorn-auth@kubernetescrd
 spec:
@@ -24,7 +23,3 @@ spec:
             name: longhorn-frontend
             port:
               number: 80
-  tls:
-  - hosts:
-    - longhorn.example.com  # Change this to your actual domain
-    secretName: longhorn-tls-secret
