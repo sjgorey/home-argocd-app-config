@@ -39,11 +39,11 @@ spec:
         ports:
         - name: dns-tcp
           containerPort: 53
-          hostPort: 5353
+          hostPort: 5533
           protocol: TCP
         - name: dns-udp
           containerPort: 53
-          hostPort: 5353
+          hostPort: 5533
           protocol: UDP
         
         # Health checks
