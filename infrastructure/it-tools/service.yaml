@@ -6,7 +6,6 @@ metadata:
 spec:
   selector:
     app: it-tools
-
   ports:
   - name: web
     port: 80
