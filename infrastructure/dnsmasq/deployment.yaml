@@ -61,25 +61,15 @@ spec:
           containerPort: 53
           protocol: UDP
         
-        # Temporarily disable health checks to troubleshoot
-        # livenessProbe:
-        #   exec:
-        #     command:
-        #     - /bin/sh
-        #     - -c
-        #     - "pgrep dnsmasq > /dev/null"
-        #   initialDelaySeconds: 15
-        #   periodSeconds: 30
-        #   timeoutSeconds: 5
-        #   failureThreshold: 3
-        # 
-        # readinessProbe:
-        #   tcpSocket:
-        #     port: 53
-        #   initialDelaySeconds: 10
-        #   periodSeconds: 5
-        #   timeoutSeconds: 3
-        #   failureThreshold: 2
+        # Simple readiness probe - just check if the container started
+        readinessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - "test -f /tmp/ready || (sleep 5 && touch /tmp/ready && exit 0)"
+          initialDelaySeconds: 5
+          periodSeconds: 10
         
         volumeMounts:
         - name: config
