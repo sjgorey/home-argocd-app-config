@@ -2,9 +2,11 @@
 
 This directory contains test pods that generate various log patterns to test the Loki logging stack.
 
-## Test Pods
+**Note**: Test logger pods are currently disabled (files renamed to `.yaml.disabled`) to avoid cluttering the production cluster. They can be re-enabled by removing the `.disabled` extension if needed for testing.
 
-### 1. Simple Test Logger (`test-logger-pod.yaml`)
+## Test Pods (Currently Disabled)
+
+### 1. Simple Test Logger (`test-logger-pod.yaml.disabled`)
 - **Container**: Single busybox container
 - **Log Pattern**: Generates INFO, DEBUG, WARN, and ERROR messages every 30 seconds
 - **Features**: 
@@ -13,7 +15,7 @@ This directory contains test pods that generate various log patterns to test the
   - Simulated errors every 5th iteration
   - Pod uptime tracking
 
-### 2. Multi-Application Logger (`multi-app-logger-pod.yaml`)
+### 2. Multi-Application Logger (`multi-app-logger-pod.yaml.disabled`)
 - **Containers**: Two containers simulating webapp and database
 - **webapp container**: 
   - Simulates HTTP requests (GET, POST, PUT, DELETE)
@@ -26,9 +28,15 @@ This directory contains test pods that generate various log patterns to test the
   - Occasional slow query warnings
   - Connection timeout errors
 
-## Deployment
+## Deployment (When Enabled)
+
+To re-enable the test loggers, rename the files back to `.yaml` and apply:
 
 ```bash
+# Re-enable files (if needed)
+mv debug/test-logger-pod.yaml.disabled debug/test-logger-pod.yaml
+mv debug/multi-app-logger-pod.yaml.disabled debug/multi-app-logger-pod.yaml
+
 # Deploy simple test logger
 kubectl apply -f debug/test-logger-pod.yaml
 
