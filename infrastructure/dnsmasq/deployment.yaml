@@ -66,10 +66,10 @@ spec:
             command:
             - /bin/sh
             - -c
-            - "nslookup google.com 127.0.0.1 > /dev/null"
-          initialDelaySeconds: 10
+            - "dig @127.0.0.1 google.com +short +timeout=2 || nslookup google.com 127.0.0.1"
+          initialDelaySeconds: 15
           periodSeconds: 30
-          timeoutSeconds: 5
+          timeoutSeconds: 10
           failureThreshold: 3
         
         readinessProbe:
@@ -77,10 +77,10 @@ spec:
             command:
             - /bin/sh
             - -c
-            - "nslookup google.com 127.0.0.1 > /dev/null"
-          initialDelaySeconds: 5
+            - "dig @127.0.0.1 google.com +short +timeout=2 || nslookup google.com 127.0.0.1"
+          initialDelaySeconds: 10
           periodSeconds: 10
-          timeoutSeconds: 3
+          timeoutSeconds: 5
           failureThreshold: 2
         
         volumeMounts:
