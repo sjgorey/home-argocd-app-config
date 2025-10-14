@@ -111,7 +111,6 @@ spec:
         configMap:
           name: dnsmasq-config
       - name: cache-storage
-        persistentVolumeClaim:
-          claimName: dnsmasq-cache-pvc
+        emptyDir: {}
       - name: log-storage
         emptyDir: {}
