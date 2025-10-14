@@ -1,17 +1,11 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: DaemonSet
 metadata:
   name: dnsmasq
   namespace: default
   labels:
     app: dnsmasq
 spec:
-  replicas: 3
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 1
-      maxSurge: 1
   selector:
     matchLabels:
       app: dnsmasq
@@ -20,21 +14,11 @@ spec:
       labels:
         app: dnsmasq
     spec:
-      # Anti-affinity to spread pods across nodes
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                - key: app
-                  operator: In
-                  values:
-                  - dnsmasq
-              topologyKey: kubernetes.io/hostname
+      # Only run on x86_64 nodes to avoid ARM compatibility issues
+      nodeSelector:
+        kubernetes.io/arch: amd64
       
-      # Service account (if needed for future RBAC)
+      # Service account
       serviceAccountName: default
       
       containers:
@@ -51,13 +35,15 @@ spec:
             cpu: 50m
             memory: 64Mi
         
-        # DNS ports
+        # DNS ports with hostPort for standard DNS access
         ports:
         - name: dns-tcp
           containerPort: 53
+          hostPort: 53
           protocol: TCP
         - name: dns-udp
           containerPort: 53
+          hostPort: 53
           protocol: UDP
         
         # Health checks
@@ -104,6 +90,14 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: status.podIP
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: NODE_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
       
       # Volumes
       volumes:
