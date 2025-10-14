@@ -10,15 +10,25 @@ spec:
   policyTypes:
     - Egress
   egress:
+    # Allow access to cluster pods
     - to:
         - ipBlock:
-            cidr: 10.0.0.0/8 # Cluster internal IP range, update this to match your cluster's CIDR
+            cidr: 10.42.0.0/16 # Pod network CIDR
       ports:
         - protocol: TCP
+          port: 80
+        - protocol: TCP
           port: 443
+    # Allow access to cluster services
     - to:
         - ipBlock:
-            cidr: 172.16.0.0/12 # Adjust based on your cluster setup
+            cidr: 10.43.0.0/16 # Service network CIDR
       ports:
         - protocol: TCP
+          port: 80
+        - protocol: TCP
           port: 443
+        - protocol: TCP
+          port: 53
+        - protocol: UDP
+          port: 53
