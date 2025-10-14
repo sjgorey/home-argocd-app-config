@@ -1,11 +1,17 @@
 apiVersion: apps/v1
-kind: DaemonSet
+kind: Deployment
 metadata:
   name: dnsmasq
   namespace: default
   labels:
     app: dnsmasq
 spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
   selector:
     matchLabels:
       app: dnsmasq
@@ -18,7 +24,20 @@ spec:
       nodeSelector:
         kubernetes.io/arch: amd64
       
-      # Service account
+      # Anti-affinity to spread pods across different x86_64 nodes
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - dnsmasq
+              topologyKey: kubernetes.io/hostname
+      
       serviceAccountName: default
       
       containers:
@@ -26,7 +45,6 @@ spec:
         image: jpillora/dnsmasq:latest
         imagePullPolicy: Always
         
-        # Resource limits for stability
         resources:
           limits:
             cpu: 100m
@@ -35,18 +53,14 @@ spec:
             cpu: 50m
             memory: 64Mi
         
-        # DNS ports with hostPort for external access
         ports:
         - name: dns-tcp
           containerPort: 53
-          hostPort: 5533
           protocol: TCP
         - name: dns-udp
           containerPort: 53
-          hostPort: 5533
           protocol: UDP
         
-        # Health checks
         livenessProbe:
           exec:
             command:
@@ -69,7 +83,6 @@ spec:
           timeoutSeconds: 3
           failureThreshold: 2
         
-        # Volume mounts
         volumeMounts:
         - name: config
           mountPath: /etc/dnsmasq.conf
@@ -80,7 +93,6 @@ spec:
         - name: log-storage
           mountPath: /var/log
         
-        # Environment variables
         env:
         - name: POD_NAME
           valueFrom:
@@ -90,16 +102,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: status.podIP
-        - name: NODE_NAME
-          valueFrom:
-            fieldRef:
-              fieldPath: spec.nodeName
-        - name: NODE_IP
-          valueFrom:
-            fieldRef:
-              fieldPath: status.hostIP
       
-      # Volumes
       volumes:
       - name: config
         configMap:
