@@ -61,13 +61,6 @@ spec:
           containerPort: 53
           protocol: UDP
         
-        # Simplest possible readiness probe
-        readinessProbe:
-          exec:
-            command: ["/bin/true"]
-          initialDelaySeconds: 5
-          periodSeconds: 10
-        
         volumeMounts:
         - name: config
           mountPath: /etc/dnsmasq.conf

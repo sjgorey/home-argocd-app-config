@@ -22,7 +22,33 @@ spec:
     protocol: UDP
 
 ---
-# NodePort Service (for router access)
+# LoadBalancer Service (primary access)
+apiVersion: v1
+kind: Service
+metadata:
+  name: dnsmasq-lb
+  namespace: default
+  labels:
+    app: dnsmasq
+  annotations:
+    metallb.universe.tf/address-pool: default
+spec:
+  type: LoadBalancer
+  loadBalancerIP: 192.168.1.12
+  selector:
+    app: dnsmasq
+  ports:
+  - name: dns-tcp
+    port: 53
+    targetPort: 53
+    protocol: TCP
+  - name: dns-udp
+    port: 53
+    targetPort: 53
+    protocol: UDP
+
+---
+# NodePort Service (for router access with port forwarding)
 apiVersion: v1
 kind: Service
 metadata:
