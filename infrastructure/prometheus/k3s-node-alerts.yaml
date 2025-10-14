@@ -183,14 +183,14 @@ spec:
         
     # Too many pods on a node
     - alert: NodeTooManyPods
-      expr: kube_node_status_allocatable{resource="pods"} - kube_node_status_capacity{resource="pods"} < 2
+      expr: (count by (node) (kube_pod_info{host_network="false"}) / on (node) kube_node_status_allocatable{resource="pods"}) * 100 > 98
       for: 10m
       labels:
         severity: warning
         team: infrastructure
       annotations:
         summary: "Node {{ $labels.node }} is running too many pods"
-        description: "Node {{ $labels.node }} has fewer than 2 pod slots available. Consider scheduling workloads elsewhere."
+        description: "Node {{ $labels.node }} is using {{ $value | humanizePercentage }} of its pod capacity. Consider scheduling workloads elsewhere."
         
     # Node has unschedulable taints
     - alert: NodeUnschedulable
