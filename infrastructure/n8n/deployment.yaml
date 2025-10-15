@@ -35,9 +35,9 @@ spec:
         - name: N8N_PORT
           value: "5678"
         - name: N8N_PROTOCOL
-          value: "https"
+          value: "http"
         - name: WEBHOOK_URL
-          value: "https://n8n.example.com/"
+          value: "http://n8n.example.com/"
         - name: GENERIC_TIMEZONE
           value: "America/New_York"
         - name: N8N_LOG_LEVEL
@@ -54,8 +54,6 @@ spec:
           value: "/home/node/.n8n/database.sqlite"
         
         # Security
-        - name: N8N_SECURE_COOKIE
-          value: "true"
         - name: N8N_ENCRYPTION_KEY
           valueFrom:
             secretKeyRef:

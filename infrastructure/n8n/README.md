@@ -5,13 +5,13 @@ n8n is a powerful workflow automation tool that helps you connect different serv
 ## Deployment
 
 - **Namespace**: `n8n` (dedicated namespace for isolation)
-- **URL**: https://n8n.example.com
+- **URL**: http://n8n.example.com
 - **First Run**: n8n will prompt you to create an admin account on first access
 
 ## Features
 
 - ✅ **Persistent Storage**: 5GB Longhorn volume for workflows and data
-- ✅ **HTTPS Access**: Automatic TLS via Let's Encrypt  
+- ✅ **HTTP Access**: Available at http://n8n.example.com (matches other cluster services)
 - ✅ **Webhook Support**: External webhook URL configured
 - ✅ **Security**: Network policies and encrypted data
 - ✅ **Multi-arch**: Supports both x86_64 and ARM64 nodes
@@ -25,7 +25,7 @@ n8n is a powerful workflow automation tool that helps you connect different serv
 
 ## Initial Setup
 
-1. Navigate to https://n8n.example.com
+1. Navigate to http://n8n.example.com
 2. Create your admin account
 3. Start building workflows!
 
