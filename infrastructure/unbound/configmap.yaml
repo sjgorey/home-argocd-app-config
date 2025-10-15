@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: unbound-config
+  namespace: default
+  labels:
+    app: unbound
+data:
+  unbound.conf: |
+    server:
+        verbosity: 1
+        interface: 0.0.0.0
+        port: 53
+        do-ip4: yes
+        do-ip6: no
+        do-udp: yes
+        do-tcp: yes
+        
+        # Allow queries from any source
+        access-control: 0.0.0.0/0 allow
+        
+        # Trust glue only if it is within the servers authority
+        harden-glue: yes
+        
+        # Require DNSSEC data for trust-anchored zones
+        harden-dnssec-stripped: yes
+        
+        # Use 0x20-encoded random bits in the query
+        use-caps-for-id: no
+        
+        # Reduce EDNS reassembly buffer size
+        edns-buffer-size: 1472
+        
+        # Cache settings
+        msg-cache-size: 64m
+        rrset-cache-size: 128m
+        cache-max-ttl: 86400
+        
+        # Local domain overrides
+        local-zone: "home.local." static
+        local-data: "router.home.local. IN A 192.168.1.1"
+        local-data: "nas.home.local. IN A 192.168.1.100"
+        
+        # Wildcard for example.com to point to cluster nodes
+        local-zone: "example.com." redirect
+        local-data: "example.com. IN A 192.168.1.5"
+        
+    forward-zone:
+        name: "."
+        forward-addr: 8.8.8.8
+        forward-addr: 8.8.4.4
+        forward-addr: 1.1.1.1
+        forward-addr: 1.0.0.1

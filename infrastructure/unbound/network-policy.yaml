@@ -1,14 +1,14 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: dnsmasq-network-policy
+  name: unbound-network-policy
   namespace: default
   labels:
-    app: dnsmasq
+    app: unbound
 spec:
   podSelector:
     matchLabels:
-      app: dnsmasq
+      app: unbound
   policyTypes:
     - Ingress
     - Egress

@@ -1,10 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: dnsmasq
+  name: unbound
   namespace: default
   labels:
-    app: dnsmasq
+    app: unbound
 spec:
   replicas: 2
   strategy:
@@ -14,15 +14,17 @@ spec:
       maxSurge: 1
   selector:
     matchLabels:
-      app: dnsmasq
+      app: unbound
   template:
     metadata:
       labels:
-        app: dnsmasq
-    spec:
+        app: unbound
+    spec:      
       # Only run on x86_64 nodes to avoid ARM compatibility issues
+      # Force to thinkpad node which has working networking
       nodeSelector:
         kubernetes.io/arch: amd64
+        kubernetes.io/hostname: thinkpad-192-168-1-5
       
       # Anti-affinity to spread pods across different x86_64 nodes
       affinity:
@@ -41,8 +43,8 @@ spec:
       serviceAccountName: default
       
       containers:
-      - name: dnsmasq
-        image: jpillora/dnsmasq:latest
+      - name: unbound
+        image: mvance/unbound:latest
         imagePullPolicy: Always
         
         resources:
@@ -63,11 +65,11 @@ spec:
         
         volumeMounts:
         - name: config
-          mountPath: /etc/dnsmasq.conf
-          subPath: dnsmasq.conf
+          mountPath: /opt/unbound/etc/unbound/unbound.conf
+          subPath: unbound.conf
           readOnly: true
         - name: cache-storage
-          mountPath: /var/lib/dnsmasq
+          mountPath: /var/lib/unbound
         - name: log-storage
           mountPath: /var/log
         
@@ -84,7 +86,7 @@ spec:
       volumes:
       - name: config
         configMap:
-          name: dnsmasq-config
+          name: unbound-config
       - name: cache-storage
         emptyDir: {}
       - name: log-storage
