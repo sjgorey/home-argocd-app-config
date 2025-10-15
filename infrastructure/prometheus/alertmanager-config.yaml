@@ -1,3 +1,7 @@
+# ⚠️ LEGACY FILE - NOT IN USE
+# This file is kept for reference only
+# Active configuration is in alertmanager-config-simple.yaml
+#
 apiVersion: v1
 kind: Secret
 metadata:
@@ -11,7 +15,7 @@ stringData:
       smtp_smarthost: 'smtp-server.maine.rr.com:587'
       smtp_from: 'gorco@maine.rr.com'
       smtp_auth_username: 'gorco@maine.rr.com'
-      smtp_auth_password: 'G0rco.c0m'
+      smtp_auth_password: 'REPLACE_WITH_ACTUAL_PASSWORD'
       smtp_require_tls: true
       
       # Slack webhook URL (update with your webhook)

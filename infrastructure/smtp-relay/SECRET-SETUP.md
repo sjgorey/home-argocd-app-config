@@ -5,14 +5,14 @@ Since we don't want to store the actual SMTP password in git, create the secret 
 ## Option 1: Using kubectl directly
 ```bash
 kubectl create secret generic smtp-credentials \
-  --from-literal=password='G0rco.c0m' \
+  --from-literal=password='YOUR_ACTUAL_PASSWORD' \
   -n smtp-relay
 ```
 
 ## Option 2: Create secret.yaml locally and apply
 ```bash
 # Generate base64 encoded password
-echo -n 'G0rco.c0m' | base64
+echo -n 'YOUR_ACTUAL_PASSWORD' | base64
 
 # Create local secret.yaml (not committed to git)
 cat > infrastructure/smtp-relay/secret-local.yaml << 'EOF'
@@ -25,7 +25,7 @@ metadata:
     app: smtp-relay
 type: Opaque
 data:
-  password: RzByY28uYzBt  # This is 'G0rco.c0m' base64 encoded
+  password: YOUR_BASE64_ENCODED_PASSWORD  # Replace with actual base64 encoded password
 EOF
 
 # Apply the secret
