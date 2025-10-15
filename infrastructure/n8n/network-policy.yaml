@@ -1,0 +1,46 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: n8n-network-policy
+  namespace: n8n
+  labels:
+    app: n8n
+spec:
+  podSelector:
+    matchLabels:
+      app: n8n
+  policyTypes:
+  - Ingress
+  - Egress
+  
+  ingress:
+  # Allow traffic from Traefik ingress
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: kube-system
+    ports:
+    - protocol: TCP
+      port: 5678
+  
+  # Allow traffic from monitoring namespace (for metrics)
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: monitoring
+    ports:
+    - protocol: TCP
+      port: 5678
+  
+  # Allow traffic from within n8n namespace
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: n8n
+    ports:
+    - protocol: TCP
+      port: 5678
+  
+  egress:
+  # Allow all outbound traffic (n8n needs to call external APIs)
+  - to: []
