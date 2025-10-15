@@ -12,35 +12,18 @@ spec:
   policyTypes:
   - Ingress
   - Egress
-  
   ingress:
-  # Allow traffic from Traefik ingress
+  # Allow ingress traffic on port 5678 from any namespace
+  # This includes Traefik for ingress routing
+  - ports:
+    - protocol: TCP
+      port: 5678
+  # Allow ingress for health checks and internal communication
   - from:
-    - namespaceSelector:
-        matchLabels:
-          name: kube-system
+    - namespaceSelector: {}  # Allow from any namespace
     ports:
     - protocol: TCP
       port: 5678
-  
-  # Allow traffic from monitoring namespace (for metrics)
-  - from:
-    - namespaceSelector:
-        matchLabels:
-          name: monitoring
-    ports:
-    - protocol: TCP
-      port: 5678
-  
-  # Allow traffic from within n8n namespace
-  - from:
-    - namespaceSelector:
-        matchLabels:
-          name: n8n
-    ports:
-    - protocol: TCP
-      port: 5678
-  
   egress:
-  # Allow all outbound traffic (n8n needs to call external APIs)
-  - to: []
+  # Allow all egress traffic
+  - {}
