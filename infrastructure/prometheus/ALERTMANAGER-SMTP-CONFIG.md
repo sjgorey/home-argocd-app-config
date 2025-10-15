@@ -8,9 +8,9 @@ This directory contains the AlertManager configuration for sending email notific
 ### `alertmanager-config-simple.yaml`
 **Status: ✅ PRODUCTION - Currently Active**
 - Working AlertmanagerConfig v1alpha1 resource
-- SMTP server: `mail.roadrunner.com:587` with TLS
-- Uses `smtp-auth` secret for password management
-- Routes infrastructure alerts to `gorco@maine.rr.com`
+- SMTP server: `smtp-relay.smtp-relay.svc.cluster.local:25` (internal relay)
+- No authentication required (handled by internal relay)
+- Routes infrastructure alerts to `steve.gorey+k3s@gmail.com`
 
 ### `alertmanager-config.yaml` 
 **Status: ⚠️ LEGACY - Secret-based configuration**

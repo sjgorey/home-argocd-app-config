@@ -46,8 +46,8 @@ In n8n email nodes, configure:
 
 ### Example Applications:
 - n8n workflows
-- AlertManager (can be configured to use this instead of direct SMTP)
-- Grafana notifications
+- AlertManager (✅ **Currently configured** to use this relay)
+- Grafana notifications (ready to configure)
 - Custom applications
 - Backup scripts
 
