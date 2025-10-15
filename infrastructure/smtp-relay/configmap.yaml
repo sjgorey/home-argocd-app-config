@@ -1,0 +1,87 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postfix-config
+  namespace: smtp-relay
+  labels:
+    app: smtp-relay
+data:
+  main.cf: |
+    # Basic Postfix configuration for SMTP relay
+    smtpd_banner = $myhostname ESMTP
+    biff = no
+    append_dot_mydomain = no
+    readme_directory = no
+    
+    # Network and hostname settings
+    myhostname = smtp-relay.smtp-relay.svc.cluster.local
+    mydomain = cluster.local
+    myorigin = $mydomain
+    mydestination = 
+    
+    # Relay configuration
+    relayhost = [mail.roadrunner.com]:587
+    smtp_use_tls = yes
+    smtp_tls_security_level = encrypt
+    smtp_tls_note_starttls_offer = yes
+    smtp_sasl_auth_enable = yes
+    smtp_sasl_security_options = noanonymous
+    smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd
+    
+    # Network restrictions - only accept from cluster
+    inet_interfaces = all
+    inet_protocols = ipv4
+    
+    # Accept mail from cluster network
+    mynetworks = 127.0.0.0/8 10.42.0.0/16 10.43.0.0/16
+    
+    # Relay restrictions
+    smtpd_relay_restrictions = 
+        permit_mynetworks,
+        permit_sasl_authenticated,
+        defer_unauth_destination
+    
+    # Message size limit (25MB)
+    message_size_limit = 26214400
+    
+    # Logging
+    maillog_file = /dev/stdout
+    
+  master.cf: |
+    # service type  private unpriv  chroot  wakeup  maxproc command + args
+    smtp      inet  n       -       n       -       -       smtpd
+    submission inet n       -       n       -       -       smtpd
+      -o syslog_name=postfix/submission
+      -o smtpd_tls_security_level=encrypt
+      -o smtpd_sasl_auth_enable=yes
+      -o smtpd_sasl_type=dovecot
+      -o smtpd_sasl_path=private/auth
+      -o smtpd_sasl_security_options=noanonymous
+      -o smtpd_reject_unlisted_recipient=no
+      -o smtpd_client_restrictions=permit_sasl_authenticated,reject
+      -o milter_macro_daemon_name=ORIGINATING
+    pickup    unix  n       -       n       60      1       pickup
+    cleanup   unix  n       -       n       -       0       cleanup
+    qmgr      unix  n       -       n       300     1       qmgr
+    tlsmgr    unix  -       -       n       1000?   1       tlsmgr
+    rewrite   unix  -       -       n       -       -       trivial-rewrite
+    bounce    unix  -       -       n       -       0       bounce
+    defer     unix  -       -       n       -       0       bounce
+    trace     unix  -       -       n       -       0       bounce
+    verify    unix  -       -       n       -       1       verify
+    flush     unix  n       -       n       1000?   0       flush
+    proxymap  unix  -       -       n       -       -       proxymap
+    proxywrite unix -       -       n       -       1       proxymap
+    smtp      unix  -       -       n       -       -       smtp
+    relay     unix  -       -       n       -       -       smtp
+        -o smtp_fallback_relay=
+    showq     unix  n       -       n       -       -       showq
+    error     unix  -       -       n       -       -       error
+    retry     unix  -       -       n       -       -       error
+    discard   unix  -       -       n       -       -       discard
+    local     unix  -       n       n       -       -       local
+    virtual   unix  -       n       n       -       -       virtual
+    lmtp      unix  -       -       n       -       -       lmtp
+    anvil     unix  -       -       n       -       1       anvil
+    scache    unix  -       -       n       -       1       scache
+    postlog   unix-dgram n  -       n       -       1       postlogd

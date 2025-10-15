@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: smtp-relay
+  namespace: smtp-relay
+  labels:
+    app: smtp-relay
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate  # Postfix doesn't handle multiple instances well
+  selector:
+    matchLabels:
+      app: smtp-relay
+  template:
+    metadata:
+      labels:
+        app: smtp-relay
+    spec:
+      serviceAccountName: default
+      
+      containers:
+      - name: postfix
+        image: boky/postfix:latest
+        imagePullPolicy: Always
+        
+        ports:
+        - name: smtp
+          containerPort: 587
+          protocol: TCP
+        
+        env:
+        # Configure postfix via environment variables
+        - name: ALLOWED_SENDER_DOMAINS
+          value: "cluster.local maine.rr.com"
+        - name: RELAYHOST
+          value: "mail.roadrunner.com:587"
+        - name: RELAYHOST_USERNAME
+          value: "gorco@maine.rr.com"
+        - name: RELAYHOST_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: smtp-credentials
+              key: password
+        - name: HOSTNAME
+          value: "smtp-relay"
+        - name: MESSAGE_SIZE_LIMIT
+          value: "26214400"
+        
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
+        
+        livenessProbe:
+          tcpSocket:
+            port: smtp
+          initialDelaySeconds: 30
+          periodSeconds: 60
+          timeoutSeconds: 5
+          failureThreshold: 3
+        
+        readinessProbe:
+          tcpSocket:
+            port: smtp
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
