@@ -8,7 +8,6 @@ spec:
   source:
     repoURL: https://kubeflow.github.io/spark-operator
     chart: spark-operator
-    targetRevision: 2.3.0
     helm:
       values: |
         sparkJobNamespace: spark
