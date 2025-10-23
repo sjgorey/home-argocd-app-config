@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/kubeflow/spark-operator.git
     path: charts/spark-operator-chart/crds
-    targetRevision: v2.3.0
+    targetRevision: 2.3.0
   destination:
     server: https://kubernetes.default.svc
     namespace: spark-operator
