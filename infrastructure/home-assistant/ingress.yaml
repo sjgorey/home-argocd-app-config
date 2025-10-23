@@ -4,9 +4,9 @@ metadata:
   name: home-assistant
   namespace: home-assistant
   annotations:
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
-    nginx.ingress.kubernetes.io/forwarded-for-header: "X-Forwarded-For"
-    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    traefik.ingress.kubernetes.io/router.entrypoints: web  # For HTTP (port 80)
+    traefik.ingress.kubernetes.io/router.middlewares: home-assistant-forwarded-for@kubernetescrd
+    kubernetes.io/ingress.class: traefik
 spec:
   rules:
   - host: home.example.com
