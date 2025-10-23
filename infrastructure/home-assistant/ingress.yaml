@@ -6,6 +6,7 @@ metadata:
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: web
     traefik.ingress.kubernetes.io/router.middlewares: home-assistant-forwarded-for@kubernetescrd
+    traefik.ingress.kubernetes.io/router.pathmatcher: Prefix
   labels:
     app: home-assistant
 spec:
