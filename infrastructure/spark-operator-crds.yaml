@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: spark-operator-crds
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/kubeflow/spark-operator.git
+    path: deploy/crds
+    targetRevision: v2.3.0
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: spark-operator
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
