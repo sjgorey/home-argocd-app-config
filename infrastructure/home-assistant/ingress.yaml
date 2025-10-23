@@ -7,7 +7,10 @@ metadata:
     traefik.ingress.kubernetes.io/router.entrypoints: web  # For HTTP (port 80)
     traefik.ingress.kubernetes.io/router.middlewares: home-assistant-forwarded-for@kubernetescrd
     kubernetes.io/ingress.class: traefik
+  labels:
+    app: home-assistant
 spec:
+  ingressClassName: traefik
   rules:
   - host: home.example.com
     http:
