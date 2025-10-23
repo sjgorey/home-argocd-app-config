@@ -6,8 +6,8 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/kubeflow/spark-operator.git
-    path: charts/spark-operator-chart
+    repoURL: https://kubeflow.github.io/spark-operator
+    chart: spark-operator
     targetRevision: v2.3.0
     helm:
       values: |
