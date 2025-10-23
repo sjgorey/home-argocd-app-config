@@ -6,9 +6,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/GoogleCloudPlatform/spark-on-k8s-operator.git
+    repoURL: https://github.com/kubeflow/spark-operator.git
     path: charts/spark-operator
-    targetRevision: 1.1.27
+    targetRevision: v2.3.0
     helm:
       values: |
         sparkJobNamespace: spark
