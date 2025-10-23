@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/GoogleCloudPlatform/spark-on-k8s-operator.git
-    chart: spark-operator
+    path: charts/spark-operator
     targetRevision: 1.1.27
     helm:
       values: |
