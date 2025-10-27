@@ -40,6 +40,14 @@ data:
         local-zone: "home.local." static
         local-data: "router.home.local. IN A 192.168.1.1"
         local-data: "nas.home.local. IN A 192.168.1.100"
+        local-data: "master IN A 192.168.1.5"
+        local-data: "node5 IN A 192.168.1.5"
+        local-data: "node6 IN A 192.168.1.6"
+        local-data: "node12 IN A 192.168.1.12"
+        local-data: "node21 IN A 192.168.1.21"
+        local-data: "node22 IN A 192.168.1.22"
+        local-data: "node23 IN A 192.168.1.23"
+        local-data: "node24 IN A 192.168.1.24"
         
         # Wildcard for example.com to point to cluster nodes
         local-zone: "example.com." redirect
