@@ -1,0 +1,173 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: paperless-ngx
+  namespace: paperless-ngx
+  labels:
+    app: paperless-ngx
+    component: app
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: paperless-ngx
+      component: app
+  template:
+    metadata:
+      labels:
+        app: paperless-ngx
+        component: app
+    spec:
+      serviceAccountName: default
+      
+      # Init container to run migrations and create superuser
+      initContainers:
+      - name: paperless-init
+        image: ghcr.io/paperless-ngx/paperless-ngx:latest
+        imagePullPolicy: IfNotPresent
+        
+        command:
+        - /bin/bash
+        - -c
+        - |
+          set -e
+          echo "Waiting for database..."
+          python3 manage.py migrate
+          echo "Creating superuser if it doesn't exist..."
+          python3 manage.py shell -c "
+          from django.contrib.auth import get_user_model;
+          User = get_user_model();
+          username = '$PAPERLESS_ADMIN_USER';
+          email = '$PAPERLESS_ADMIN_EMAIL';
+          password = '$PAPERLESS_ADMIN_PASSWORD';
+          if not User.objects.filter(username=username).exists():
+              User.objects.create_superuser(username, email, password);
+              print(f'Superuser {username} created.');
+          else:
+              print(f'Superuser {username} already exists.');
+          "
+        
+        env:
+        - name: PAPERLESS_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: paperless-secrets
+              key: secret-key
+        - name: PAPERLESS_ADMIN_USER
+          valueFrom:
+            secretKeyRef:
+              name: paperless-secrets
+              key: admin-user
+        - name: PAPERLESS_ADMIN_EMAIL
+          valueFrom:
+            secretKeyRef:
+              name: paperless-secrets
+              key: admin-email
+        - name: PAPERLESS_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: paperless-secrets
+              key: admin-password
+        - name: PAPERLESS_DBNAME
+          valueFrom:
+            secretKeyRef:
+              name: paperless-secrets
+              key: db-name
+        - name: PAPERLESS_DBUSER
+          valueFrom:
+            secretKeyRef:
+              name: paperless-secrets
+              key: db-user
+        - name: PAPERLESS_DBPASS
+          valueFrom:
+            secretKeyRef:
+              name: paperless-secrets
+              key: db-password
+        
+        envFrom:
+        - configMapRef:
+            name: paperless-config
+        
+        volumeMounts:
+        - name: paperless-data
+          mountPath: /usr/src/paperless/data
+        - name: paperless-media
+          mountPath: /usr/src/paperless/media
+      
+      containers:
+      - name: paperless-ngx
+        image: ghcr.io/paperless-ngx/paperless-ngx:latest
+        imagePullPolicy: IfNotPresent
+        
+        ports:
+        - name: http
+          containerPort: 8000
+          protocol: TCP
+        
+        env:
+        - name: PAPERLESS_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: paperless-secrets
+              key: secret-key
+        - name: PAPERLESS_DBNAME
+          valueFrom:
+            secretKeyRef:
+              name: paperless-secrets
+              key: db-name
+        - name: PAPERLESS_DBUSER
+          valueFrom:
+            secretKeyRef:
+              name: paperless-secrets
+              key: db-user
+        - name: PAPERLESS_DBPASS
+          valueFrom:
+            secretKeyRef:
+              name: paperless-secrets
+              key: db-password
+        
+        envFrom:
+        - configMapRef:
+            name: paperless-config
+        
+        volumeMounts:
+        - name: paperless-data
+          mountPath: /usr/src/paperless/data
+        - name: paperless-media
+          mountPath: /usr/src/paperless/media
+        
+        resources:
+          requests:
+            cpu: 200m
+            memory: 512Mi
+          limits:
+            cpu: 1000m
+            memory: 2Gi
+        
+        livenessProbe:
+          httpGet:
+            path: /
+            port: http
+          initialDelaySeconds: 120
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+        
+        readinessProbe:
+          httpGet:
+            path: /
+            port: http
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+      
+      volumes:
+      - name: paperless-data
+        persistentVolumeClaim:
+          claimName: paperless-data-pvc
+      - name: paperless-media
+        persistentVolumeClaim:
+          claimName: paperless-media-pvc

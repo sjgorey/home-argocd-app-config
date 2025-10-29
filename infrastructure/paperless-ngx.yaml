@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: paperless-ngx
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/sjgorey/home-argocd-app-config
+    path: infrastructure/paperless-ngx
+    targetRevision: main
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: paperless-ngx
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
