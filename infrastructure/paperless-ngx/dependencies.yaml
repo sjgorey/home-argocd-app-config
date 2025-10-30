@@ -20,6 +20,8 @@ spec:
         app: paperless-ngx
         component: postgres
     spec:
+      nodeSelector:
+        kubernetes.io/arch: amd64
       containers:
       - name: postgres
         image: postgres:15-alpine
@@ -114,6 +116,8 @@ spec:
         app: paperless-ngx
         component: redis
     spec:
+      nodeSelector:
+        kubernetes.io/arch: amd64
       containers:
       - name: redis
         image: redis:7-alpine
@@ -188,6 +192,8 @@ spec:
         app: paperless-ngx
         component: tika
     spec:
+      nodeSelector:
+        kubernetes.io/arch: amd64
       containers:
       - name: tika
         image: apache/tika:latest-full
@@ -244,6 +250,8 @@ spec:
         app: paperless-ngx
         component: gotenberg
     spec:
+      nodeSelector:
+        kubernetes.io/arch: amd64
       containers:
       - name: gotenberg
         image: gotenberg/gotenberg:8

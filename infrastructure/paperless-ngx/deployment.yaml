@@ -21,6 +21,8 @@ spec:
         component: app
     spec:
       serviceAccountName: default
+      nodeSelector:
+        kubernetes.io/arch: amd64
       
       # Init container to run migrations and create superuser
       initContainers:
