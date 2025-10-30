@@ -1,0 +1,39 @@
+# Longhorn Storage Settings Configuration
+# These settings can be adjusted to manage disk space usage on ARM64 nodes
+
+apiVersion: longhorn.io/v1beta2
+kind: Setting
+metadata:
+  name: storage-over-provisioning-percentage
+  namespace: longhorn-system
+value: "200"  # Allow 200% over-provisioning (default: 100)
+---
+apiVersion: longhorn.io/v1beta2
+kind: Setting
+metadata:
+  name: storage-minimal-available-percentage
+  namespace: longhorn-system
+value: "10"   # Reduce minimum available space to 10% (default: 25)
+---
+apiVersion: longhorn.io/v1beta2
+kind: Setting
+metadata:
+  name: storage-reserved-percentage-for-default-disk
+  namespace: longhorn-system
+value: "15"   # Reduce reserved space to 15% (default: 30)
+---
+# Enable automatic cleanup of old snapshots to free space
+apiVersion: longhorn.io/v1beta2
+kind: Setting
+metadata:
+  name: snapshot-max-count
+  namespace: longhorn-system
+value: "50"   # Reduce max snapshots per volume (default: 250)
+---
+# Enable replica auto-balancing to distribute load
+apiVersion: longhorn.io/v1beta2
+kind: Setting
+metadata:
+  name: replica-auto-balance
+  namespace: longhorn-system
+value: "least-effort"  # Enable auto-balancing (default: disabled)
