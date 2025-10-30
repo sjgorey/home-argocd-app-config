@@ -6,7 +6,9 @@ metadata:
   labels:
     app: paperless-ngx
 data:
-  PAPERLESS_URL: "https://paperless.example.com"
+  PAPERLESS_URL: "http://paperless.example.com"
+  PAPERLESS_BIND_ADDR: "0.0.0.0"
+  PAPERLESS_PORT: "8000"
   PAPERLESS_TIME_ZONE: "America/New_York"
   PAPERLESS_OCR_LANGUAGE: "eng"
   PAPERLESS_OCR_LANGUAGES: "eng deu fra ita spa"
