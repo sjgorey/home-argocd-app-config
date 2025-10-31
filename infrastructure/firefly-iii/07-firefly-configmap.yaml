@@ -20,8 +20,8 @@ data:
   MAIL_USERNAME: ""
   MAIL_PASSWORD: ""
   MAIL_ENCRYPTION: "null"          # Empty = no TLS/SSL
-  MAIL_FROM_ADDRESS: "steve.gorey+firefly@gmail.com"
-  MAIL_FROM: "steve.gorey+firefly@gmail.com"
+  MAIL_FROM_ADDRESS: "gorco@maine.rr.com"
+  MAIL_FROM: "gorco@maine.rr.com"
   MAIL_FROM_NAME: "Firefly III"
   MAIL_SCHEME: "smtp"
   MAIL_VERIFY_PEER: "false"
