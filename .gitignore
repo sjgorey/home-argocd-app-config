@@ -7,3 +7,5 @@ infrastructure/paperless-ngx/secret-real.yaml
 infrastructure/firefly/03-postgres-secret.yaml
 infrastructure/firefly/08-firefly-secret.yaml
 infrastructure/firefly/11-firefly-appkey-secret.yaml
+infrastructure/ghostfolio/01-secrets.yaml
+infrastructure/ghostfolio/security-token.txt
