@@ -13,8 +13,15 @@ data:
   DB_PORT: "5432"
   DB_DATABASE: firefly
   DB_USERNAME: firefly
-  MAIL_MAILER: log
-  MAIL_FROM: "firefly@example.com"
+  # === SMTP SETTINGS (No Auth, No TLS) ===
+  MAIL_MAILER: smtp
+  MAIL_HOST: smtp-relay.smtp-relay.svc.cluster.local
+  MAIL_PORT: "25"
+  MAIL_USERNAME: ""
+  MAIL_PASSWORD: ""
+  MAIL_ENCRYPTION: ""          # Empty = no TLS/SSL
+  MAIL_FROM_ADDRESS: "steve.gorey+firefly@gmail.com"
+  MAIL_FROM_NAME: "Firefly III"
   # DB_PASSWORD is in the Secret
   # Change after first login
   APP_KEY: ""   # APP_KEY is now in firefly-app-key secret
