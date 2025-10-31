@@ -19,7 +19,7 @@ data:
   MAIL_PORT: "25"
   MAIL_USERNAME: ""
   MAIL_PASSWORD: ""
-  MAIL_ENCRYPTION: "null"          # Empty = no TLS/SSL
+  MAIL_ENCRYPTION: null          # Empty = no TLS/SSL
   MAIL_FROM_ADDRESS: "steve.gorey+firefly@gmail.com"
   MAIL_FROM: "steve.gorey+firefly@gmail.com"
   MAIL_FROM_NAME: "Firefly III"
