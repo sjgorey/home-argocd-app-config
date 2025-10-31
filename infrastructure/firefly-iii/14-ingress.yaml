@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: firefly-ingress
+  namespace: firefly-iii
+spec:
+  rules:
+  - host: firefly.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: firefly-iii
+            port:
+              name: web

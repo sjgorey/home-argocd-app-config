@@ -1,0 +1,10 @@
+# 02-postgres-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-config
+  namespace: firefly-iii
+data:
+  POSTGRES_DB: firefly
+  POSTGRES_USER: firefly
+  # POSTGRES_PASSWORD is in the Secret below

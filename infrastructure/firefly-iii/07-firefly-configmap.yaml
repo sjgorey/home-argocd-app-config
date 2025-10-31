@@ -1,0 +1,20 @@
+# 07-firefly-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: firefly-config
+  namespace: firefly-iii
+data:
+  APP_ENV: production
+  APP_DEBUG: "false"
+  SITE_OWNER: "steve.gorey+firefly@gmail.com"
+  DB_CONNECTION: pgsql
+  DB_HOST: postgres
+  DB_PORT: "5432"
+  DB_DATABASE: firefly
+  DB_USERNAME: firefly
+  MAIL_MAILER: log
+  MAIL_FROM: "firefly@example.com"
+  # DB_PASSWORD is in the Secret
+  # Change after first login
+  APP_KEY: ""   # APP_KEY is now in firefly-app-key secret

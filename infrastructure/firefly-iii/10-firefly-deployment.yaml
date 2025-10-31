@@ -1,0 +1,60 @@
+# 10-firefly-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: firefly-iii
+  namespace: firefly-iii
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: firefly-iii
+  template:
+    metadata:
+      labels:
+        app: firefly-iii
+    spec:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+      securityContext:
+        runAsUser: 33        # www-data UID
+        runAsGroup: 33       # www-data GID
+        fsGroup: 33          # <-- THIS IS CRITICAL for mounted volumes
+      containers:
+        - name: firefly
+          image: fireflyiii/core:latest
+          envFrom:
+            - configMapRef:
+                name: firefly-config
+            - secretRef:
+                name: firefly-secret
+          env:
+            - name: APP_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: firefly-app-key
+                  key: app_key
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: storage
+              mountPath: /var/www/html/storage
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "300m"
+            limits:
+              memory: "1Gi"
+              cpu: "800m"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 30
+      volumes:
+        - name: storage
+          persistentVolumeClaim:
+            claimName: firefly-storage
