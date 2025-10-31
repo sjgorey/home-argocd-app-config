@@ -3,6 +3,8 @@ kind: Application
 metadata:
   name: ghostfolio
   namespace: argocd
+  labels:
+    app.kubernetes.io/name: ghostfolio
 spec:
   project: default
   source:
