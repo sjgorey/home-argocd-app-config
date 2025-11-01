@@ -1,0 +1,138 @@
+# 18-data-importer-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: firefly-data-importer
+  namespace: firefly-iii
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: firefly-data-importer
+  template:
+    metadata:
+      labels:
+        app: firefly-data-importer
+    spec:
+      nodeSelector:
+        kubernetes.io/arch: arm64
+      containers:
+        - name: firefly-data-importer
+          image: fireflyiii/data-importer:latest
+          ports:
+            - containerPort: 8080
+          env:
+            # From ConfigMap
+            - name: FIREFLY_III_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: firefly-data-importer-config
+                  key: FIREFLY_III_URL
+            - name: APP_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: firefly-data-importer-config
+                  key: APP_ENV
+            - name: APP_DEBUG
+              valueFrom:
+                configMapKeyRef:
+                  name: firefly-data-importer-config
+                  key: APP_DEBUG
+            - name: LOG_CHANNEL
+              valueFrom:
+                configMapKeyRef:
+                  name: firefly-data-importer-config
+                  key: LOG_CHANNEL
+            - name: DB_CONNECTION
+              valueFrom:
+                configMapKeyRef:
+                  name: firefly-data-importer-config
+                  key: DB_CONNECTION
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: firefly-data-importer-config
+                  key: DB_HOST
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: firefly-data-importer-config
+                  key: DB_PORT
+            - name: DB_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: firefly-data-importer-config
+                  key: DB_DATABASE
+            - name: DB_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: firefly-data-importer-config
+                  key: DB_USERNAME
+            - name: IMPORT_DIR_ALLOWLIST
+              valueFrom:
+                configMapKeyRef:
+                  name: firefly-data-importer-config
+                  key: IMPORT_DIR_ALLOWLIST
+            - name: SESSION_DRIVER
+              valueFrom:
+                configMapKeyRef:
+                  name: firefly-data-importer-config
+                  key: SESSION_DRIVER
+            - name: BROADCAST_DRIVER
+              valueFrom:
+                configMapKeyRef:
+                  name: firefly-data-importer-config
+                  key: BROADCAST_DRIVER
+            - name: QUEUE_CONNECTION
+              valueFrom:
+                configMapKeyRef:
+                  name: firefly-data-importer-config
+                  key: QUEUE_CONNECTION
+            
+            # From Secrets
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: firefly-data-importer-secrets
+                  key: DB_PASSWORD
+            - name: APP_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: firefly-data-importer-secrets
+                  key: APP_KEY
+            - name: FIREFLY_III_ACCESS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: firefly-data-importer-secrets
+                  key: FIREFLY_III_ACCESS_TOKEN
+          
+          volumeMounts:
+            - name: import-storage
+              mountPath: /import
+          
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+      
+      volumes:
+        - name: import-storage
+          persistentVolumeClaim:
+            claimName: firefly-data-importer-storage

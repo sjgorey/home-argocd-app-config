@@ -1,0 +1,36 @@
+# 15-data-importer-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: firefly-data-importer-config
+  namespace: firefly-iii
+data:
+  # Firefly III connection settings
+  FIREFLY_III_URL: "http://firefly-iii:8080"
+  FIREFLY_III_ACCESS_TOKEN: ""  # This should be set in a secret
+  
+  # Data Importer specific settings
+  APP_ENV: production
+  APP_DEBUG: "false"
+  LOG_CHANNEL: stack
+  
+  # Database settings (uses same DB as Firefly III)
+  DB_CONNECTION: pgsql
+  DB_HOST: postgres
+  DB_PORT: "5432"
+  DB_DATABASE: firefly
+  DB_USERNAME: firefly
+  
+  # Import settings
+  IMPORT_DIR_ALLOWLIST: "/import"
+  
+  # Optional: Redis cache (if you want to add caching)
+  # CACHE_DRIVER: redis
+  # REDIS_HOST: redis
+  # REDIS_PASSWORD: ""
+  # REDIS_PORT: "6379"
+  
+  # Session and security
+  SESSION_DRIVER: file
+  BROADCAST_DRIVER: log
+  QUEUE_CONNECTION: sync
