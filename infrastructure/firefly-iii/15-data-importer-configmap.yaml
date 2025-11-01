@@ -6,7 +6,7 @@ metadata:
   namespace: firefly-iii
 data:
   # Firefly III connection settings
-  FIREFLY_III_URL: "http://firefly-iii:8080"
+  FIREFLY_III_URL: "http://firefly-iii:80"
   FIREFLY_III_ACCESS_TOKEN: ""  # This should be set in a secret
   
   # Data Importer specific settings
