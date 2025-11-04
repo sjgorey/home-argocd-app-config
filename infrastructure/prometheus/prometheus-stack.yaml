@@ -198,7 +198,7 @@ data:
     [server]
     domain = ''
     [date_formats]
-    default_timezone = America/New_York
+    default_timezone = browser
 ---
 # Source: kube-prometheus-stack/templates/grafana/configmaps-datasources.yaml
 apiVersion: v1
