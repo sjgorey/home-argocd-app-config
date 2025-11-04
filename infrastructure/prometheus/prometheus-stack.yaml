@@ -197,6 +197,8 @@ data:
     provisioning = /etc/grafana/provisioning
     [server]
     domain = ''
+    [date_formats]
+    default_timezone = America/New_York
 ---
 # Source: kube-prometheus-stack/templates/grafana/configmaps-datasources.yaml
 apiVersion: v1
