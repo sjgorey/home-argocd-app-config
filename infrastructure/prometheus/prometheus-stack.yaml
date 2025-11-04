@@ -2359,7 +2359,6 @@ metadata:
     release: "kube-prometheus-stack"
     heritage: "Helm"
 spec:
-  automountServiceAccountToken: true
   alerting:
     alertmanagers:
       - namespace: monitoring
@@ -2377,7 +2376,6 @@ spec:
   logLevel:  info
   logFormat:  logfmt
   listenLocal: false
-  enableOTLPReceiver: false
   enableAdminAPI: false
   resources:
     limits:
@@ -6243,7 +6241,6 @@ spec:
     interval: 10s
     honorLabels: true
     honorTimestamps: true
-    trackTimestampsStaleness: true    
     tlsConfig:
       caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
       insecureSkipVerify: true
