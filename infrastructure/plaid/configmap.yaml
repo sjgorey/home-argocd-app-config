@@ -4,7 +4,7 @@ metadata:
   name: plaid-config
   namespace: plaid
 data:
-  PLAID_REDIRECT_URI: "https://plaid.gorco.us"
-  PLAID_ENV: "production"
+  PLAID_REDIRECT_URI: "https://plaid.example.com"
+  PLAID_ENV: "Production"
   PLAID_PRODUCTS: "transactions"
   PLAID_COUNTRY_CODES: "US"

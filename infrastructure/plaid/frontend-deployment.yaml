@@ -22,7 +22,7 @@ spec:
         imagePullPolicy: Always
         env:
         - name: REACT_APP_API_HOST
-          value: "http://plaid-python-service"
+          value: "/api"
         resources:
           requests:
             memory: "512Mi"
