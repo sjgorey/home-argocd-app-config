@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: plaid-config
+  namespace: plaid
+data:
+  PLAID_REDIRECT_URI: "https://plaid.gorco.us"
+  PLAID_ENV: "production"
+  PLAID_PRODUCTS: "transactions"
+  PLAID_COUNTRY_CODES: "US"

@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: plaid-python
+  namespace: plaid
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: plaid-python
+  template:
+    metadata:
+      labels:
+        app: plaid-python
+    spec:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+      containers:
+      - name: python-app
+        image: sjgorey/quickstart-python:latest
+        imagePullPolicy: Always
+        env:
+        # Sensitive data from secrets
+        - name: PLAID_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: plaid-secrets
+              key: PLAID_CLIENT_ID
+        - name: PLAID_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: plaid-secrets
+              key: PLAID_SECRET
+        # Non-sensitive data from configmap
+        - name: PLAID_REDIRECT_URI
+          valueFrom:
+            configMapKeyRef:
+              name: plaid-config
+              key: PLAID_REDIRECT_URI
+        - name: PLAID_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: plaid-config
+              key: PLAID_ENV
+        - name: PLAID_PRODUCTS
+          valueFrom:
+            configMapKeyRef:
+              name: plaid-config
+              key: PLAID_PRODUCTS
+        - name: PLAID_COUNTRY_CODES
+          valueFrom:
+            configMapKeyRef:
+              name: plaid-config
+              key: PLAID_COUNTRY_CODES
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "250m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8000  # Change if your app uses different port
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: plaid-python-service
+  namespace: plaid
+spec:
+  selector:
+    app: plaid-python
+  ports:
+  - port: 80
+    targetPort: 8000
+  type: LoadBalancer
