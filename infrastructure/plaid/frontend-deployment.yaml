@@ -22,13 +22,13 @@ spec:
         imagePullPolicy: Always
         env:
         - name: REACT_APP_API_HOST
-          value: "/api"
+          value: "http://plaid-node-service"
         resources:
           requests:
-            memory: "512Mi"
+            memory: "1Gi"
             cpu: "250m"
           limits:
-            memory: "1Gi"
+            memory: "2Gi"
             cpu: "500m"
         ports:
         - containerPort: 3000
