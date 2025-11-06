@@ -3,9 +3,24 @@ kind: Ingress
 metadata:
   name: it-tools-ingress
   namespace: default
+  annotations:
+    # Allow traffic from both HTTP and HTTPS entry points
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
 spec:
   rules:
+  # Internal access via HTTP
   - host: it-tools.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: it-tools
+            port:
+              name: web
+  # External access via Cloudflare tunnel (HTTPS)
+  - host: it-tools.gorco.us
     http:
       paths:
       - path: /
