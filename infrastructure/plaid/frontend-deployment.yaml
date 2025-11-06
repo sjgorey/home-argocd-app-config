@@ -1,0 +1,47 @@
+# frontend-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: plaid-frontend
+  namespace: plaid
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: plaid-frontend
+  template:
+    metadata:
+      labels:
+        app: plaid-frontend
+    spec:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+      containers:
+      - name: frontend
+        image: sjgorey/quickstart-frontend:latest
+        imagePullPolicy: Always
+        env:
+        - name: REACT_APP_API_HOST
+          value: "http://plaid-python-service"
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        ports:
+        - containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: plaid-frontend-service
+  namespace: plaid
+spec:
+  selector:
+    app: plaid-frontend
+  ports:
+  - port: 80
+    targetPort: 3000
+  type: LoadBalancer
