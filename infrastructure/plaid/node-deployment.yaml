@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: plaid-python
+  name: plaid-node
   namespace: plaid
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: plaid-python
+      app: plaid-node
   template:
     metadata:
       labels:
-        app: plaid-python
+        app: plaid-node
     spec:
       nodeSelector:
         kubernetes.io/arch: amd64
       containers:
-      - name: python-app
-        image: sjgorey/quickstart-python:latest
+      - name: node-app
+        image: sjgorey/quickstart-node:latest
         imagePullPolicy: Always
         env:
         # Sensitive data from secrets
@@ -65,11 +65,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: plaid-python-service
+  name: plaid-node-service
   namespace: plaid
 spec:
   selector:
-    app: plaid-python
+    app: plaid-node
   ports:
   - port: 80
     targetPort: 8000
