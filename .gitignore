@@ -9,3 +9,4 @@ infrastructure/firefly/08-firefly-secret.yaml
 infrastructure/firefly/11-firefly-appkey-secret.yaml
 infrastructure/ghostfolio/01-secrets.yaml
 infrastructure/ghostfolio/security-token.txt
+hub.docker.token
