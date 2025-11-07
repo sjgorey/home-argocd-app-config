@@ -20,7 +20,7 @@ metadata:
   labels:
     strimzi.io/cluster: my-cluster
 spec:
-  partitions: 6
+  partitions: 1
   replicas: 3
   config:
     retention.ms: 604800000   # 7 days - weekly retention
