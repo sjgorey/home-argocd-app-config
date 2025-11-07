@@ -5,10 +5,31 @@ metadata:
   name: plaid-ingress
   namespace: plaid
   annotations:
-    traefik.ingress.kubernetes.io/router.entrypoints: web
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
 spec:
+  tls:
+  - hosts:
+    - plaid.gorco.us
+    secretName: plaid-tls-secret
   rules:
   - host: plaid.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: plaid-frontend-service
+            port:
+              number: 80
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: plaid-node-service
+            port:
+              number: 80
+  - host: plaid.gorco.us
     http:
       paths:
       - path: /
