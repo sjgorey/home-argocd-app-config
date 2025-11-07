@@ -14,3 +14,4 @@ infrastructure/ghostfolio/security-token.txt
 infrastructure/plaid/secrets.yaml
 
 hub.docker.token
+infrastructure/plaid/access_tokens
