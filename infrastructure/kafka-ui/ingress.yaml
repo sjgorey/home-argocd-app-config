@@ -2,7 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: kafka-ui-ingress
-  namespace: default
+  namespace: kafka
 spec:
   rules:
   - host: kafka-ui.example.com
