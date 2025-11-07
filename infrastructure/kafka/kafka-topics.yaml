@@ -11,6 +11,23 @@ spec:
   config:
     retention.ms: 604800000
     segment.ms: 86400000
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: transactions-tcfcu
+  namespace: kafka
+  labels:
+    strimzi.io/cluster: my-cluster
+spec:
+  partitions: 6
+  replicas: 3
+  config:
+    retention.ms: 604800000   # 7 days - weekly retention
+    #retention.ms: 259200000  # 3 days retention
+    #segment.ms: 43200000     # 12 hour segments
+    compression.type: lz4
+    cleanup.policy: delete
 
 # Sample topic configuration - uncomment to create
 # ---
