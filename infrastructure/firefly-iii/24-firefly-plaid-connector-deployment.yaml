@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: firefly-plaid-connector
+  namespace: firefly-iii
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: firefly-plaid-connector
+  template:
+    metadata:
+      labels:
+        app: firefly-plaid-connector
+    spec:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+        - name: firefly-plaid-connector
+          image: ghcr.io/dvankley/firefly-plaid-connector-2:latest
+          env:
+            - name: SPRING_CONFIG_LOCATION
+              value: "/opt/fpc-config/application.yml"
+            - name: FIREFLYPLAIDCONNECTOR2_POLLED_CURSORFILEDIRECTORYPATH
+              value: "/opt/fpc-cursors"
+            - name: FIREFLY_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: firefly-plaid-connector-secret
+                  key: firefly-token
+            - name: PLAID_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: firefly-plaid-connector-secret
+                  key: plaid-client-id
+            - name: PLAID_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: firefly-plaid-connector-secret
+                  key: plaid-secret
+            - name: PLAID_ACCESS_TOKEN_TCFCU
+              valueFrom:
+                secretKeyRef:
+                  name: firefly-plaid-connector-secret
+                  key: plaid-access-token-tcfc
+          volumeMounts:
+            - name: config
+              mountPath: /opt/fpc-config
+              readOnly: true
+            - name: cursors
+              mountPath: /opt/fpc-cursors
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          # Health check based on application logs or file existence
+          livenessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - "ps aux | grep -v grep | grep java"
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+      volumes:
+        - name: config
+          configMap:
+            name: firefly-plaid-connector-config
+        - name: cursors
+          persistentVolumeClaim:
+            claimName: firefly-plaid-connector-cursors

@@ -1,0 +1,117 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: firefly-plaid-connector-config
+  namespace: firefly-iii
+data:
+  application.yml: |
+    fireflyPlaidConnector2:
+      # "batch" or "polled"
+      #   - "batch" runs once, attempting to sync all data up to maxSyncDays, and then exits
+      #   - "polled" runs forever, syncing all new data every "syncFrequencyMinutes", storing
+      #     its current state in persistence/plaid_sync_cursors.txt. On first run, it will only pull
+      #     transactions that occurred after the run started.
+      syncMode: polled
+      # PlaidTransaction.merchantName will always be used, if available, as the name of a transaction's
+      #   destination (or source, for some transfers) account in Firefly.
+      # If this is set to true and PlaidTransaction.merchantName is null, then PlaidTransaction.name will
+      #   be used instead.
+      # If this is set to false and PlaidTransaction.merchantName is null, then the account will be given
+      #   a generic "Unknown" name.
+      # Defaults to true.
+      useNameForDestination: true
+      # Firefly uses a timestamp for when transactions occurred, but Plaid does not always provide a timestamp
+      #   for transactions; often it only provides a date. In those cases, we need a time zone to apply so that
+      #   the timestamp that shows up in Firefly properly spans the specified date in the user's timezone.
+      # Acceptable values are any time zone name from https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+      timeZone: America/New_York
+      # The maximum number of days apart transactions can be and still be candidates for matching up as a Firefly transfer.
+      # Must be less than fireflyPlaidConnector2.polled.existingFireflyPullWindowDays.
+      transferMatchWindowDays: 3
+      polled:
+        # How often to run the poll sync process
+        syncFrequencyMinutes: 60
+        # How many days in the past we should pull existing Firefly transactions for.
+        # These Firefly transactions are used for searching for targets for Plaid updates and deletes, as well as for
+        #   searching for transfer matches.
+        # Must be more than fireflyPlaidConnector2.transferMatchWindowDays
+        existingFireflyPullWindowDays: 5
+        # Path to a directory that the application can use to store a file that tracks the state of the Plaid sync cursors.
+        # This path needs to be writeable by the application's user and needs to be persistent. If you're using Docker,
+        #   you may want to use a volume or bind mount for this so that cursor state is persisted between runs.
+        cursorFileDirectoryPath: /opt/fpc-cursors/
+        # Configuration element specifying whether the remainder of the poll sync session should continue if one item
+        # has failed to fetch from Plaid for any reason.
+        allowItemToFail: false
+      batch:
+        # The number of days in the past to pull data for.
+        maxSyncDays: 71
+        # NOTE: Given that the balance endpoint is now $0.10 per call, this feature isn't really worth using anymore
+        # and is no longer officially supported because it costs me money every time I want to QA a change to it.
+        # If set to true, we will insert an offsetting transaction at the beginning of the batch pull window so
+        #   that the total amount of all transactions pulled plus the offsetting transaction equals the current
+        #   balance in the account as reported by Plaid.
+        # This is useful for ensuring the current balance in your accounts is accurate even if you don't
+        #   pull every transaction from the beginning of time.
+        # Defaults to false.
+        setInitialBalance: false
+      firefly:
+        url: http://firefly-iii:80
+        # Can be created in Firefly in Options->Profile->Oauth->Personal Access Tokens
+        # This will be injected from the secret
+        personalAccessToken: ${FIREFLY_TOKEN}
+      plaid:
+        url: https://production.plaid.com
+        # These will be injected from the secret
+        clientId: ${PLAID_CLIENT_ID}
+        secret: ${PLAID_SECRET}
+        # The number of transactions to fetch from Plaid at a time.
+        # This doesn't have a major effect as in both batch and sync mode we have to retain data sets larger
+        #   than just the Plaid transaction batch in memory to try to match up transfers.
+        # Larger batch sizes can reduce rate limiting issues.
+        batchSize: 100
+        # The number of times to retry a failed API call.
+        maxRetries: 3
+      # Transaction categorization configuration (optional, defaults to disable categorization)
+      categorization:
+        # Controls tagging for a Plaid transaction's primary personal finance category
+        primary:
+          # Set to true to enable tags for a Plaid transaction's primary personal finance category
+          enable: true
+          # Optional, defaults to "plaid-primary-cat-"
+          prefix: "plaid-primary-cat-"
+        # Controls tagging for a Plaid transaction's detailed personal finance category
+        detailed:
+          # Set to true to enable tags for a Plaid transaction's detailed personal finance category
+          enable: true
+          prefix: "plaid-detailed-cat-"
+      # An array of accounts to sync from Plaid to Firefly
+      accounts:
+        # 001-PRIMARY SHARE ACCOUNT
+        - fireflyAccountId: 4
+          plaidItemAccessToken: ${PLAID_ACCESS_TOKEN_TCFCU}
+          plaidAccountId: QLo5BZwP7msbOYX0R0gRSv4vXo7XPnCzkQ3vm
+        # 20-IRA SHARES-REG
+        - fireflyAccountId: 5
+          plaidItemAccessToken: ${PLAID_ACCESS_TOKEN_TCFCU}
+          plaidAccountId: RDojb56qK9uq4Ywn8ng8saqaQxoQZmT486J0z
+        # 063-ALL PURPOSE/SPECIAL CB
+        - fireflyAccountId: 12
+          plaidItemAccessToken: ${PLAID_ACCESS_TOKEN_TCFCU}
+          plaidAccountId: OwoQBJ5D4minrYVyAyeAcPgPCgPpEopO3HVM7Lq7
+        # 2409-REWARDS CHECKING
+        - fireflyAccountId: 13
+          plaidItemAccessToken: ${PLAID_ACCESS_TOKEN_TCFCU}
+          plaidAccountId: VB5OM7yKx9SdxEbg5gz5s0j0YVqYMEHXQ0Zmv
+        # 631-ALL PURPOSE/SPECIAL CB
+        - fireflyAccountId: 14
+          plaidItemAccessToken: ${PLAID_ACCESS_TOKEN_TCFCU}
+          plaidAccountId: MXEZPar6bOTJnxK1B1gBf3p3k8xkKOu5QA4bJ
+
+      product:
+        name: Firefly Plaid Connector 2
+    logging:
+      level:
+        root: INFO
+        net:
+          djvk: DEBUG
