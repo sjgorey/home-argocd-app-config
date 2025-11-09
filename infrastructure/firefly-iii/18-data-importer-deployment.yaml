@@ -22,6 +22,13 @@ spec:
           ports:
             - containerPort: 8080
           env:
+            # Disable IPv6 to fix nginx binding issues
+            - name: DISABLE_IPV6
+              value: "true"
+            # Force IPv4-only binding
+            - name: LISTEN_IPV4_ONLY
+              value: "true"
+            
             # From ConfigMap
             - name: FIREFLY_III_URL
               valueFrom:
