@@ -16,3 +16,5 @@ infrastructure/plaid/secrets.yaml
 hub.docker.token
 infrastructure/plaid/access_tokens
 infrastructure/firefly-iii/21-firefly-plaid-secrets.yaml
+
+infrastructure/registry/secret.yaml
