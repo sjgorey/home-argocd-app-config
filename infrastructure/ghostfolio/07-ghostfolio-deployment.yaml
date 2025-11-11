@@ -63,6 +63,11 @@ spec:
                 configMapKeyRef:
                   name: ghostfolio-config
                   key: NODE_ENV
+            - name: FINNHUB_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ghostfolio-secrets
+                  key: FINNHUB_API_KEY
           resources:
             requests:
               cpu: 250m
