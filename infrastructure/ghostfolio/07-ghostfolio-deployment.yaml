@@ -14,7 +14,7 @@ spec:
         app: ghostfolio
     spec:
       nodeSelector:
-        kubernetes.io/arch: arm64
+        kubernetes.io/arch: amd64
       containers:
         - name: ghostfolio
           image: ghostfolio/ghostfolio:latest   # multi-arch, pulls arm64
