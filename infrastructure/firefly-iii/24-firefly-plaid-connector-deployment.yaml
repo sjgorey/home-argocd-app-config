@@ -49,6 +49,11 @@ spec:
                 secretKeyRef:
                   name: firefly-plaid-connector-secret
                   key: plaid-access-token-tcfc
+            - name: PLAID_ACCESS_TOKEN_CAPITALONE
+              valueFrom:
+                secretKeyRef:
+                  name: firefly-plaid-connector-secret
+                  key: plaid-access-token-capitalone
           volumeMounts:
             - name: config
               mountPath: /opt/fpc-config

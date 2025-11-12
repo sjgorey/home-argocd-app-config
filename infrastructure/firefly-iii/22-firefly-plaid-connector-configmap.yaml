@@ -107,6 +107,10 @@ data:
         - fireflyAccountId: 14
           plaidItemAccessToken: ${PLAID_ACCESS_TOKEN_TCFCU}
           plaidAccountId: MXEZPar6bOTJnxK1B1gBf3p3k8xkKOu5QA4bJ
+        # Capital One CC
+        - fireflyAccountId: 82
+          plaidItemAccessToken: ${PLAID_ACCESS_TOKEN_CAPITALONE}
+          plaidAccountId: Ezr4B9OaKEUv0RRebpgghvBPen7Xb8CdENNbj
 
       product:
         name: Firefly Plaid Connector 2
