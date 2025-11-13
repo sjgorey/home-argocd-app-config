@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: finance-exporter-config
+  namespace: finance-exporter
+  labels:
+    app.kubernetes.io/name: finance-exporter
+    app.kubernetes.io/component: exporter
+    app.kubernetes.io/part-of: home-infrastructure
+data:
+  # Stock symbols to monitor - comma separated
+  SYMBOLS: "AAPL,GOOGL,MSFT,TSLA,SPY,QQQ,NVDA,AMD,AMZN,META,WEX,F,GE,BAC,C,JPM"
+  
+  # Update interval in seconds (during market hours)
+  UPDATE_INTERVAL: "30"
+  
+  # Prometheus metrics port
+  METRICS_PORT: "8080"

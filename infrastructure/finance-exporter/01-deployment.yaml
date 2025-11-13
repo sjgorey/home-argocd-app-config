@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: finance-exporter
+  namespace: finance-exporter
+  labels:
+    app.kubernetes.io/name: finance-exporter
+    app.kubernetes.io/component: exporter
+    app.kubernetes.io/part-of: home-infrastructure
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: finance-exporter
+      app.kubernetes.io/component: exporter
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: finance-exporter
+        app.kubernetes.io/component: exporter
+        app.kubernetes.io/part-of: home-infrastructure
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+      - name: finance-exporter
+        image: sjgorey/finance-exporter:latest
+        imagePullPolicy: Always
+        ports:
+        - name: metrics
+          containerPort: 8080
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /metrics
+            port: metrics
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+          periodSeconds: 30
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /metrics
+            port: metrics
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
+          periodSeconds: 10
+          failureThreshold: 3
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        env:
+        - name: TZ
+          value: "America/New_York"
+        - name: SYMBOLS
+          valueFrom:
+            configMapKeyRef:
+              name: finance-exporter-config
+              key: SYMBOLS
+        - name: UPDATE_INTERVAL
+          valueFrom:
+            configMapKeyRef:
+              name: finance-exporter-config
+              key: UPDATE_INTERVAL
+        - name: METRICS_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: finance-exporter-config
+              key: METRICS_PORT
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          runAsUser: 1000
+          runAsGroup: 1000
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: false
+      securityContext:
+        fsGroup: 1000
+      restartPolicy: Always

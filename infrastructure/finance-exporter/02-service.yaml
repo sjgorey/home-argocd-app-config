@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: finance-exporter
+  namespace: finance-exporter
+  labels:
+    app.kubernetes.io/name: finance-exporter
+    app.kubernetes.io/component: exporter
+    app.kubernetes.io/part-of: home-infrastructure
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8080"
+    prometheus.io/path: "/metrics"
+spec:
+  type: ClusterIP
+  ports:
+  - name: metrics
+    port: 8080
+    targetPort: metrics
+    protocol: TCP
+  selector:
+    app.kubernetes.io/name: finance-exporter
+    app.kubernetes.io/component: exporter

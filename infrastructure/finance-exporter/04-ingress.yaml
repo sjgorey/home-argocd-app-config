@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: finance-exporter
+  namespace: finance-exporter
+  labels:
+    app.kubernetes.io/name: finance-exporter
+    app.kubernetes.io/component: exporter
+    app.kubernetes.io/part-of: home-infrastructure
+  annotations:
+    # Traefik annotations
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+spec:
+  rules:
+  - host: finance-exporter.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: finance-exporter
+            port:
+              number: 8080

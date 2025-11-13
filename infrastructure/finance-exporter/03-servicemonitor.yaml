@@ -1,0 +1,25 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: finance-exporter
+  namespace: finance-exporter
+  labels:
+    app.kubernetes.io/name: finance-exporter
+    app.kubernetes.io/component: exporter
+    app.kubernetes.io/part-of: home-infrastructure
+    # This label is used by Prometheus to discover ServiceMonitors
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: finance-exporter
+      app.kubernetes.io/component: exporter
+  endpoints:
+  - port: metrics
+    path: /metrics
+    interval: 30s
+    scrapeTimeout: 10s
+    honorLabels: true
+  namespaceSelector:
+    matchNames:
+    - finance-exporter
