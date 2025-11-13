@@ -16,3 +16,7 @@ data:
   
   # Prometheus metrics port
   METRICS_PORT: "8080"
+  
+  # Market hours configuration (HH:MM format in Eastern Time)
+  MARKET_OPEN_TIME: "09:25"
+  MARKET_CLOSE_TIME: "16:05"

@@ -73,6 +73,16 @@ spec:
             configMapKeyRef:
               name: finance-exporter-config
               key: METRICS_PORT
+        - name: MARKET_OPEN_TIME
+          valueFrom:
+            configMapKeyRef:
+              name: finance-exporter-config
+              key: MARKET_OPEN_TIME
+        - name: MARKET_CLOSE_TIME
+          valueFrom:
+            configMapKeyRef:
+              name: finance-exporter-config
+              key: MARKET_CLOSE_TIME
         securityContext:
           allowPrivilegeEscalation: false
           runAsNonRoot: true
