@@ -8,7 +8,7 @@ metadata:
     app.kubernetes.io/component: exporter
     app.kubernetes.io/part-of: home-infrastructure
     # This label is used by Prometheus to discover ServiceMonitors
-    release: prometheus
+    release: kube-prometheus-stack
 spec:
   selector:
     matchLabels:
