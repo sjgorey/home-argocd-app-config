@@ -1,0 +1,55 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: stock-price-alerts
+  namespace: finance-exporter
+  labels:
+    app.kubernetes.io/name: finance-exporter
+    app.kubernetes.io/component: alerts
+    app.kubernetes.io/part-of: home-infrastructure
+    # This label is required for Prometheus to discover the rules
+    release: kube-prometheus-stack
+spec:
+  groups:
+  - name: stock-price-thresholds
+    interval: 60s
+    rules:
+    # WEX stock price below threshold
+    - alert: WEXStockPriceLow
+      expr: yahoo_finance_stock_price{symbol="WEX"} < 140
+      for: 5m
+      labels:
+        severity: warning
+        team: finance
+        stock: WEX
+      annotations:
+        summary: "WEX stock price below threshold"
+        description: "WEX stock price is {{ $value | printf \"%.2f\" }} which is below the $140 threshold. Consider reviewing your position."
+        stock_symbol: "WEX"
+        threshold: "140"
+        current_price: "{{ $value | printf \"%.2f\" }}"
+        
+  - name: stock-price-general
+    interval: 60s  
+    rules:
+    # Stock data freshness check
+    - alert: StockDataStale
+      expr: time() - yahoo_finance_last_updated > 3600
+      for: 10m
+      labels:
+        severity: warning
+        team: finance
+      annotations:
+        summary: "Stock price data is stale"
+        description: "Stock price data hasn't been updated for over 1 hour. Last update was {{ $value | humanizeDuration }} ago."
+        
+    # Finance exporter service down
+    - alert: FinanceExporterDown
+      expr: up{job="finance-exporter"} == 0
+      for: 2m
+      labels:
+        severity: critical
+        team: finance
+      annotations:
+        summary: "Finance exporter is down"
+        description: "The finance-exporter service has been down for more than 2 minutes. Stock price monitoring is offline."
