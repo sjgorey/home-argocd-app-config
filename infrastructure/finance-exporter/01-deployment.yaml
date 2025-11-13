@@ -34,7 +34,7 @@ spec:
           protocol: TCP
         livenessProbe:
           httpGet:
-            path: /metrics
+            path: /healthz
             port: metrics
           initialDelaySeconds: 30
           timeoutSeconds: 5
@@ -42,7 +42,7 @@ spec:
           failureThreshold: 3
         readinessProbe:
           httpGet:
-            path: /metrics
+            path: /healthz
             port: metrics
           initialDelaySeconds: 10
           timeoutSeconds: 5
