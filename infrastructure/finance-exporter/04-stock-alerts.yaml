@@ -16,7 +16,7 @@ spec:
     rules:
     # WEX stock price below threshold
     - alert: WEXStockPriceLow
-      expr: yahoo_finance_stock_price{symbol="WEX"} < 140 and time() - yahoo_finance_last_updated < 7200
+      expr: yahoo_finance_stock_price{symbol="WEX"} < 140 and (time() - yahoo_finance_last_updated) < 7200
       for: 5m
       labels:
         severity: warning
@@ -24,25 +24,24 @@ spec:
         stock: WEX
       annotations:
         summary: "WEX stock price below threshold"
-        description: "WEX stock price is {{ $value | printf \"%.2f\" }} which is below the $140 threshold. Consider reviewing your position. Data last updated {{ (time() - yahoo_finance_last_updated) | humanizeDuration }} ago."
+        description: "WEX stock price is {{ $value | printf \"%.2f\" }} which is below the $140 threshold. Consider reviewing your position."
         stock_symbol: "WEX"
         threshold: "140"
         current_price: "{{ $value | printf \"%.2f\" }}"
-        data_age: "{{ (time() - yahoo_finance_last_updated) | humanizeDuration }}"
         
   - name: stock-price-general
     interval: 60s  
     rules:
     # Stock data freshness check
     - alert: StockDataStale
-      expr: time() - yahoo_finance_last_updated > 3600
+      expr: (time() - yahoo_finance_last_updated) > 3600
       for: 10m
       labels:
         severity: warning
         team: finance
       annotations:
         summary: "Stock price data is stale"
-        description: "Stock price data hasn't been updated for over 1 hour. Last update was {{ $value | humanizeDuration }} ago."
+        description: "Stock price data hasn't been updated for over 1 hour."
         
     # Finance exporter service down
     - alert: FinanceExporterDown
