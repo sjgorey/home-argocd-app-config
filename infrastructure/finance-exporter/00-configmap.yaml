@@ -9,7 +9,7 @@ metadata:
     app.kubernetes.io/part-of: home-infrastructure
 data:
   # Stock symbols to monitor - comma separated
-  SYMBOLS: "SPY, QQQ, DIA, IWM, XLF, XLK, XLE, TNX, DXY, VIX, WEX"
+  SYMBOLS: "SPY,QQQ,DIA,IWM,XLF,XLK,XLE,TNX,DXY,VIX,WEX"
   
   # Update interval in seconds (during market hours)
   UPDATE_INTERVAL: "60"
