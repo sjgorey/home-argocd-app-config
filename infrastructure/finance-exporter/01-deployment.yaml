@@ -58,31 +58,12 @@ spec:
         env:
         - name: TZ
           value: "America/New_York"
-        - name: SYMBOLS
-          valueFrom:
-            configMapKeyRef:
-              name: finance-exporter-config
-              key: SYMBOLS
-        - name: UPDATE_INTERVAL
-          valueFrom:
-            configMapKeyRef:
-              name: finance-exporter-config
-              key: UPDATE_INTERVAL
-        - name: METRICS_PORT
-          valueFrom:
-            configMapKeyRef:
-              name: finance-exporter-config
-              key: METRICS_PORT
-        - name: MARKET_OPEN_TIME
-          valueFrom:
-            configMapKeyRef:
-              name: finance-exporter-config
-              key: MARKET_OPEN_TIME
-        - name: MARKET_CLOSE_TIME
-          valueFrom:
-            configMapKeyRef:
-              name: finance-exporter-config
-              key: MARKET_CLOSE_TIME
+        - name: CONFIG_PATH
+          value: "/etc/config"
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/config
+          readOnly: true
         securityContext:
           allowPrivilegeEscalation: false
           runAsNonRoot: true
@@ -92,6 +73,10 @@ spec:
             drop:
             - ALL
           readOnlyRootFilesystem: false
+      volumes:
+      - name: config-volume
+        configMap:
+          name: finance-exporter-config
       securityContext:
         fsGroup: 1000
       restartPolicy: Always
