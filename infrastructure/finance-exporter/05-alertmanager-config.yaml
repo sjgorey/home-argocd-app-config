@@ -24,48 +24,47 @@ spec:
     - to: 'steve.gorey+stockalerts@gmail.com'
       from: 'gorco@maine.rr.com'
       smarthost: 'smtp-relay.smtp-relay.svc.cluster.local:25'
-      subject: '{{ if eq .Status "firing" }}🚨 STOCK ALERT: {{ .GroupLabels.stock }}{{ else }}✅ RESOLVED: {{ .GroupLabels.stock }}{{ end }}'
-      body: |
+      html: |
         {{ if eq .Status "firing" }}
-        🚨 **STOCK ALERT TRIGGERED**
+        <h2>🚨 STOCK ALERT TRIGGERED</h2>
         {{ else }}
-        ✅ **STOCK ALERT RESOLVED**
+        <h2>✅ STOCK ALERT RESOLVED</h2>
         {{ end }}
         
-        **Alert Details:**
-        - **Stock**: {{ .GroupLabels.stock }}
-        - **Alert**: {{ range .Alerts }}{{ .Annotations.summary }}{{ end }}
-        - **Status**: {{ .Status | title }}
-        - **Time**: {{ range .Alerts }}{{ .StartsAt.Format "2006-01-02 15:04:05 MST" }}{{ end }}
+        <h3>Alert Details:</h3>
+        <ul>
+        <li><strong>Stock:</strong> {{ .GroupLabels.stock }}</li>
+        <li><strong>Alert:</strong> {{ range .Alerts }}{{ .Annotations.summary }}{{ end }}</li>
+        <li><strong>Status:</strong> {{ .Status | title }}</li>
+        <li><strong>Time:</strong> {{ range .Alerts }}{{ .StartsAt.Format "2006-01-02 15:04:05 MST" }}{{ end }}</li>
+        </ul>
         
         {{ if eq .Status "firing" }}
-        **Current Information:**
+        <h3>Current Information:</h3>
+        <ul>
         {{ range .Alerts }}
-        - **Current Price**: ${{ .Annotations.current_price }}
-        - **Threshold**: ${{ .Annotations.threshold }}
-        - **Description**: {{ .Annotations.description }}
+        <li><strong>Current Price:</strong> ${{ .Annotations.current_price }}</li>
+        <li><strong>Threshold:</strong> ${{ .Annotations.threshold }}</li>
+        <li><strong>Description:</strong> {{ .Annotations.description }}</li>
         {{ end }}
+        </ul>
         
-        **Action Required:**
-        Review your investment position and consider appropriate action.
+        <h3>Action Required:</h3>
+        <p>Review your investment position and consider appropriate action.</p>
         {{ else }}
-        **Resolution:**
-        The stock price has returned above the threshold level.
+        <h3>Resolution:</h3>
+        <p>The stock price has returned above the threshold level.</p>
         
-        **Next Steps:**
-        Monitor for continued stability or adjust alert thresholds if needed.
+        <h3>Next Steps:</h3>
+        <p>Monitor for continued stability or adjust alert thresholds if needed.</p>
         {{ end }}
         
-        **Trading Platform Links:**
-        - [Yahoo Finance WEX](https://finance.yahoo.com/quote/WEX)
-        - [Your Trading Platform](https://your-broker.com)
+        <h3>Trading Platform Links:</h3>
+        <ul>
+        <li><a href="https://finance.yahoo.com/quote/WEX">Yahoo Finance WEX</a></li>
+        </ul>
         
-        **Monitoring:**
-        - [Prometheus Metrics](http://prometheus.example.com)
-        - [Grafana Dashboard](http://grafana.example.com)
-        
-        ---
-        Sent from K3s Cluster Finance Monitoring System
+        <hr>
+        <p><em>Sent from K3s Cluster Finance Monitoring System</em></p>
       headers:
-        X-Priority: '1'
-        X-Stock-Alert: 'true'
+        Subject: '{{ if eq .Status "firing" }}🚨 STOCK ALERT: {{ .GroupLabels.stock }}{{ else }}✅ RESOLVED: {{ .GroupLabels.stock }}{{ end }}'
