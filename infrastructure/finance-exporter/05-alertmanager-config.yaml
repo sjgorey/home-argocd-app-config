@@ -66,5 +66,4 @@ spec:
         
         <hr>
         <p><em>Sent from K3s Cluster Finance Monitoring System</em></p>
-      headers:
-        Subject: '{{ if eq .Status "firing" }}🚨 STOCK ALERT: {{ .GroupLabels.stock }}{{ else }}✅ RESOLVED: {{ .GroupLabels.stock }}{{ end }}'
+      subject: '{{ if eq .Status "firing" }}🚨 STOCK ALERT: {{ .GroupLabels.stock }}{{ else }}✅ RESOLVED: {{ .GroupLabels.stock }}{{ end }}'
