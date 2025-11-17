@@ -1,0 +1,71 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: stock-alerts-email
+  namespace: finance-exporter
+  labels:
+    app.kubernetes.io/name: finance-exporter
+    app.kubernetes.io/component: alerting
+    app.kubernetes.io/part-of: home-infrastructure
+    alertmanagerConfig: kube-prometheus-stack
+spec:
+  route:
+    groupBy: ['team']
+    groupWait: 30s
+    groupInterval: 5m
+    repeatInterval: 4h
+    receiver: 'stock-alerts-email'
+    matchers:
+    - name: team
+      value: finance
+  receivers:
+  - name: 'stock-alerts-email'
+    emailConfigs:
+    - to: 'steve.gorey+stockalerts@gmail.com'
+      from: 'gorco@maine.rr.com'
+      smarthost: 'smtp-relay.smtp-relay.svc.cluster.local:25'
+      subject: '{{ if eq .Status "firing" }}🚨 STOCK ALERT: {{ .GroupLabels.stock }}{{ else }}✅ RESOLVED: {{ .GroupLabels.stock }}{{ end }}'
+      body: |
+        {{ if eq .Status "firing" }}
+        🚨 **STOCK ALERT TRIGGERED**
+        {{ else }}
+        ✅ **STOCK ALERT RESOLVED**
+        {{ end }}
+        
+        **Alert Details:**
+        - **Stock**: {{ .GroupLabels.stock }}
+        - **Alert**: {{ range .Alerts }}{{ .Annotations.summary }}{{ end }}
+        - **Status**: {{ .Status | title }}
+        - **Time**: {{ range .Alerts }}{{ .StartsAt.Format "2006-01-02 15:04:05 MST" }}{{ end }}
+        
+        {{ if eq .Status "firing" }}
+        **Current Information:**
+        {{ range .Alerts }}
+        - **Current Price**: ${{ .Annotations.current_price }}
+        - **Threshold**: ${{ .Annotations.threshold }}
+        - **Description**: {{ .Annotations.description }}
+        {{ end }}
+        
+        **Action Required:**
+        Review your investment position and consider appropriate action.
+        {{ else }}
+        **Resolution:**
+        The stock price has returned above the threshold level.
+        
+        **Next Steps:**
+        Monitor for continued stability or adjust alert thresholds if needed.
+        {{ end }}
+        
+        **Trading Platform Links:**
+        - [Yahoo Finance WEX](https://finance.yahoo.com/quote/WEX)
+        - [Your Trading Platform](https://your-broker.com)
+        
+        **Monitoring:**
+        - [Prometheus Metrics](http://prometheus.example.com)
+        - [Grafana Dashboard](http://grafana.example.com)
+        
+        ---
+        Sent from K3s Cluster Finance Monitoring System
+      headers:
+        X-Priority: '1'
+        X-Stock-Alert: 'true'
