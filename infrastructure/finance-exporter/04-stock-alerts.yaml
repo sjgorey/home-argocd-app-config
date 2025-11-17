@@ -16,7 +16,7 @@ spec:
     rules:
     # WEX stock price below threshold
     - alert: WEXStockPriceLow
-      expr: yahoo_finance_stock_price{symbol="WEX"} < 140 and (time() - yahoo_finance_last_updated) < 7200
+      expr: yahoo_finance_stock_price{symbol="WEX"} < 135 and on() (time() - yahoo_finance_last_updated) < 7200
       for: 5m
       labels:
         severity: warning
@@ -24,9 +24,9 @@ spec:
         stock: WEX
       annotations:
         summary: "WEX stock price below threshold"
-        description: "WEX stock price is {{ $value | printf \"%.2f\" }} which is below the $140 threshold. Consider reviewing your position."
+        description: "WEX stock price is {{ $value | printf \"%.2f\" }} which is below the $135 threshold. Consider reviewing your position."
         stock_symbol: "WEX"
-        threshold: "140"
+        threshold: "135"
         current_price: "{{ $value | printf \"%.2f\" }}"
         
   - name: stock-price-general
