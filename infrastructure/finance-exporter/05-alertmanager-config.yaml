@@ -24,6 +24,7 @@ spec:
     - to: 'steve.gorey+stockalerts@gmail.com'
       from: 'gorco@maine.rr.com'
       smarthost: 'smtp-relay.smtp-relay.svc.cluster.local:25'
+      requireTLS: false
       html: |
         {{ if eq .Status "firing" }}
         <h2>🚨 STOCK ALERT TRIGGERED</h2>
