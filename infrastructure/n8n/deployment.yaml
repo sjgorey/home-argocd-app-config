@@ -6,7 +6,7 @@ metadata:
   labels:
     app: n8n
 spec:
-  replicas: 0 #1
+  replicas: 1
   strategy:
     type: Recreate  # Important for SQLite - no concurrent access
   selector:
