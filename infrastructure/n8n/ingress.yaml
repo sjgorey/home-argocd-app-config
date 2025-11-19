@@ -1,13 +1,17 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: n8n-ingress
+  name: n8n-ingress-tls
   namespace: n8n
   labels:
     app: n8n
   annotations:
-    traefik.ingress.kubernetes.io/router.entrypoints: web
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
 spec:
+  tls:
+  - hosts:
+    - n8n.example.com
+    secretName: n8n-tls-secret
   rules:
   - host: n8n.example.com
     http:

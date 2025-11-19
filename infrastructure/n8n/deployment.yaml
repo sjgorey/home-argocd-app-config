@@ -19,6 +19,10 @@ spec:
     spec:
       serviceAccountName: default
       
+      # Pod-level security context
+      securityContext:
+        fsGroup: 1000
+      
       # Init container to fix volume permissions
       initContainers:
       - name: volume-permissions
@@ -38,7 +42,6 @@ spec:
         securityContext:
           runAsUser: 1000
           runAsGroup: 1000
-          fsGroup: 1000
         
         ports:
         - name: http
@@ -49,11 +52,11 @@ spec:
         - name: N8N_PORT
           value: "5678"
         - name: N8N_PROTOCOL
-          value: "http"
+          value: "https"
         - name: N8N_SECURE_COOKIE
           value: "false"
         - name: WEBHOOK_URL
-          value: "http://n8n.example.com/"
+          value: "https://n8n.example.com/"
         - name: GENERIC_TIMEZONE
           value: "America/New_York"
         - name: N8N_LOG_LEVEL
@@ -82,11 +85,11 @@ spec:
         
         resources:
           requests:
-            cpu: 100m
-            memory: 256Mi
-          limits:
-            cpu: 500m
+            cpu: "1"
             memory: 512Mi
+          limits:
+            cpu: "2"
+            memory: 1024Mi
         
         livenessProbe:
           httpGet:
