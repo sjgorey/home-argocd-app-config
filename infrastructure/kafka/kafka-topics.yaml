@@ -28,6 +28,21 @@ spec:
     #retention.ms: 259200000  # 3 days retention
     #segment.ms: 43200000     # 12 hour segments
     #compression.type: lz
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: wex-transactions
+  namespace: kafka
+  labels:
+    strimzi.io/cluster: my-cluster
+spec:
+  partitions: 1
+  replicas: 3
+  config:
+    cleanup.policy: delete
+    retention.ms: -1   # infinite retention
+
 
 # Sample topic configuration - uncomment to create
 # ---
