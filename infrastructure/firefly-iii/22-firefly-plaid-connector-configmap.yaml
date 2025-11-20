@@ -30,7 +30,7 @@ data:
       transferMatchWindowDays: 3
       polled:
         # How often to run the poll sync process
-        syncFrequencyMinutes: 360
+        syncFrequencyMinutes: 60
         # How many days in the past we should pull existing Firefly transactions for.
         # These Firefly transactions are used for searching for targets for Plaid updates and deletes, as well as for
         #   searching for transfer matches.
