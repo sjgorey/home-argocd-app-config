@@ -24,7 +24,7 @@ spec:
         fsGroup: 33          # <-- THIS IS CRITICAL for mounted volumes
       containers:
         - name: firefly
-          image: fireflyiii/core:latest
+          image: fireflyiii/core:latest-alpine
           envFrom:
             - configMapRef:
                 name: firefly-config
