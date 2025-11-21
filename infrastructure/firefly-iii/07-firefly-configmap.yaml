@@ -28,6 +28,9 @@ data:
   MAIL_VERIFY_PEER_NAME: "false"
   MAIL_ALLOW_SELF_SIGNED: "true"
 
+  # Disable IPv6 for nginx
+  LISTEN_IPV6: "false"
+
   # DB_PASSWORD is in the Secret
   # Change after first login
   APP_KEY: ""   # APP_KEY is now in firefly-app-key secret
