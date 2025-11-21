@@ -22,13 +22,6 @@ spec:
           ports:
             - containerPort: 8080
           env:
-            # Disable IPv6 to fix nginx binding issues
-            - name: DISABLE_IPV6
-              value: "true"
-            # Force IPv4-only binding
-            - name: LISTEN_IPV4_ONLY
-              value: "true"
-            
             # From ConfigMap
             - name: FIREFLY_III_URL
               valueFrom:
@@ -116,6 +109,9 @@ spec:
           volumeMounts:
             - name: import-storage
               mountPath: /import
+            - name: nginx-config
+              mountPath: /etc/nginx/site-opts.d/http.conf.template
+              subPath: importer-http.conf.template
           
           resources:
             requests:
@@ -143,3 +139,6 @@ spec:
         - name: import-storage
           persistentVolumeClaim:
             claimName: firefly-data-importer-storage
+        - name: nginx-config
+          configMap:
+            name: firefly-nginx-config
