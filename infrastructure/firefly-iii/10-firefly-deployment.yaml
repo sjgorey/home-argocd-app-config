@@ -18,6 +18,15 @@ spec:
     spec:
       nodeSelector:
         kubernetes.io/arch: amd64
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: NotIn
+                values:
+                - thinkpad-192-168-1-5
       securityContext:
         runAsUser: 33        # www-data UID
         runAsGroup: 33       # www-data GID
