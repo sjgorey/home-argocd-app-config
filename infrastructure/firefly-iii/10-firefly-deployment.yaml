@@ -25,15 +25,6 @@ spec:
       containers:
         - name: firefly
           image: fireflyiii/core:latest
-          command: ["/bin/sh"]
-          args:
-            - -c
-            - |
-              # Remove IPv6 listen directives from nginx config
-              find /etc/nginx -type f -name '*.conf' -exec sed -i 's/listen \[::\]:[0-9]*;/# IPv6 disabled/g' {} \;
-              find /etc/nginx -type f -name '*.conf' -exec sed -i 's/listen \[::\]:[0-9]*/ /g' {} \;
-              # Start the original entrypoint
-              exec /usr/local/bin/entrypoint.sh
           envFrom:
             - configMapRef:
                 name: firefly-config
