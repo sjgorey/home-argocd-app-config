@@ -18,15 +18,6 @@ spec:
     spec:
       nodeSelector:
         kubernetes.io/arch: amd64
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: kubernetes.io/hostname
-                operator: NotIn
-                values:
-                - thinkpad-192-168-1-5
       securityContext:
         runAsUser: 33        # www-data UID
         runAsGroup: 33       # www-data GID
@@ -42,7 +33,7 @@ spec:
               find /etc/nginx -type f -name '*.conf' -exec sed -i 's/listen \[::\]:[0-9]*;/# IPv6 disabled/g' {} \;
               find /etc/nginx -type f -name '*.conf' -exec sed -i 's/listen \[::\]:[0-9]*/ /g' {} \;
               # Start the original entrypoint
-              exec /entrypoint.sh
+              exec /usr/local/bin/entrypoint.sh
           envFrom:
             - configMapRef:
                 name: firefly-config
