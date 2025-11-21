@@ -41,6 +41,9 @@ spec:
           volumeMounts:
             - name: storage
               mountPath: /var/www/html/storage
+            - name: nginx-config
+              mountPath: /etc/nginx/site-opts.d/http.conf.template
+              subPath: http.conf.template
           resources:
             requests:
               memory: "512Mi"
@@ -58,3 +61,6 @@ spec:
         - name: storage
           persistentVolumeClaim:
             claimName: firefly-storage
+        - name: nginx-config
+          configMap:
+            name: firefly-nginx-config
