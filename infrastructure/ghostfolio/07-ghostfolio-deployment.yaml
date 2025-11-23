@@ -4,7 +4,7 @@ metadata:
   name: ghostfolio
   namespace: ghostfolio
 spec:
-  replicas: 1
+  replicas: 0 #1
   selector:
     matchLabels:
       app: ghostfolio

@@ -5,7 +5,7 @@ metadata:
   namespace: ghostfolio
 spec:
   serviceName: postgres
-  replicas: 1
+  replicas: 0 #1
   selector:
     matchLabels:
       app: postgres
