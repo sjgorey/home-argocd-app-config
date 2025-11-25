@@ -9,10 +9,10 @@ metadata:
     app.kubernetes.io/part-of: home-infrastructure
 data:
   # Stock symbols to monitor - comma separated
-  SYMBOLS: "SPY,QQQ,DIA,IWM,XLF,XLK,XLE,WEX,CPAY,TSLA,AMZN,NVDA,AMD,MSFT"
+  SYMBOLS: "SPY,QQQ,WEX,CPAY,TSLA,AMZN,NVDA,MSFT"
   
   # Update interval in seconds (during market hours)
-  UPDATE_INTERVAL: "60"
+  UPDATE_INTERVAL: "300"
   
   # Prometheus metrics port
   METRICS_PORT: "8080"
