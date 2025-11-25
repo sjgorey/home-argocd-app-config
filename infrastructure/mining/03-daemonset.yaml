@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: xmrig
+  namespace: mining
+spec:
+  selector:
+    matchLabels:
+      app: xmrig
+  template:
+    metadata:
+      labels:
+        app: xmrig
+    spec:
+      nodeSelector:
+        kubernetes.io/arch: arm64
+      tolerations:
+      - operator: Exists
+      containers:
+      - name: xmrig
+        image: sjgorey/xmrig-arm64:latest
+        imagePullPolicy: Always
+        command: ["/usr/local/bin/xmrig"]
+        args:
+        - "--url=$(POOL_URL)"
+        - "--user=$(POOL_USER)"
+        - "--pass=$(POOL_PASS)"
+        - "--tls"
+        - "--donate-level=$(DONATE_LEVEL)"
+        - "--http-host=0.0.0.0"
+        - "--http-port=8080"
+
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "64Mi"
+          limits:
+            cpu: "4"
+            memory: "4Gi"
+        env:
+        - name: POOL_URL
+          value: "p2pool.io:3333"
+        - name: POOL_USER
+          valueFrom:
+            secretKeyRef:
+              name: xmrig-secrets
+              key: wallet
+        - name: POOL_PASS
+          valueFrom:
+            secretKeyRef:
+              name: xmrig-secrets
+              key: worker-name
+        - name: DONATE_LEVEL
+          value: "1"
+        securityContext:
+          capabilities:
+            add: ["SYS_ADMIN"]
+        volumeMounts:
+        - name: hugepages
+          mountPath: /dev/hugepages
+        ports:
+        - containerPort: 8080
+          name: http
+      volumes:
+      - name: hugepages
+        hostPath:
+          path: /dev/hugepages

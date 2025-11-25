@@ -19,3 +19,6 @@ infrastructure/firefly-iii/21-firefly-plaid-secrets.yaml
 
 infrastructure/registry/secret.yaml
 infrastructure/freshrss/secret-real.yaml
+
+# Mining secrets   
+infrastructure/mining/secret
