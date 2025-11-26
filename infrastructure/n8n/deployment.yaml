@@ -17,6 +17,8 @@ spec:
       labels:
         app: n8n
     spec:
+      nodeSelector:
+        kubernetes.io/arch: amd64
       serviceAccountName: default
       
       # Pod-level security context
