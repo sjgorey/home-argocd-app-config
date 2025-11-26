@@ -13,6 +13,8 @@ spec:
       labels:
         app: home-assistant
     spec:
+      nodeSelector:
+        kubernetes.io/arch: amd64
       containers:
       - name: home-assistant
         image: ghcr.io/home-assistant/home-assistant:latest

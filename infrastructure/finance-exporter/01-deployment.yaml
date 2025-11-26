@@ -24,6 +24,8 @@ spec:
         prometheus.io/port: "8080"
         prometheus.io/path: "/metrics"
     spec:
+      nodeSelector:
+        kubernetes.io/arch: amd64
       containers:
       - name: finance-exporter
         image: sjgorey/finance-exporter:latest
