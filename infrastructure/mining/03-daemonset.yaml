@@ -39,7 +39,7 @@ spec:
             memory: "4Gi"
         env:
         - name: POOL_URL
-          value: "gulf.moneroocean.stream:10128"
+          value: "gulf.moneroocean.stream:20032"
         - name: POOL_USER
           valueFrom:
             secretKeyRef:

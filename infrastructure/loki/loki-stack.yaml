@@ -237,6 +237,8 @@ spec:
         prometheus.io/port: http-metrics
         prometheus.io/scrape: "true"
     spec:
+      nodeSelector:
+        kubernetes.io/arch: amd64
       serviceAccountName: loki
       securityContext:
         fsGroup: 10001

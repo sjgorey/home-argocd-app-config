@@ -188,6 +188,9 @@ spec:
       labels:
         k8s-app: kubernetes-dashboard
     spec:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+        "kubernetes.io/os": linux
       securityContext:
         seccompProfile:
           type: RuntimeDefault
@@ -233,8 +236,6 @@ spec:
         - name: tmp-volume
           emptyDir: {}
       serviceAccountName: admin-user
-      nodeSelector:
-        "kubernetes.io/os": linux
       # Comment the following tolerations if Dashboard must not be deployed on master
       tolerations:
         - key: node-role.kubernetes.io/master
@@ -276,6 +277,9 @@ spec:
       labels:
         k8s-app: dashboard-metrics-scraper
     spec:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+        "kubernetes.io/os": linux
       securityContext:
         seccompProfile:
           type: RuntimeDefault
@@ -308,8 +312,6 @@ spec:
               cpu: 200m
               memory: 200Mi
       serviceAccountName: kubernetes-dashboard
-      nodeSelector:
-        "kubernetes.io/os": linux
       # Comment the following tolerations if Dashboard must not be deployed on master
       tolerations:
         - key: node-role.kubernetes.io/master

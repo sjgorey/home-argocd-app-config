@@ -151,7 +151,7 @@ spec:
         runAsNonRoot: false
         fsGroup: 33
       nodeSelector:
-        kubernetes.io/arch: arm64
+        kubernetes.io/arch: amd64
       restartPolicy: Always
 ---
 apiVersion: v1

@@ -4441,6 +4441,8 @@ spec:
         app.kubernetes.io/version: v1.6.0
         app: longhorn-driver-deployer
     spec:
+      nodeSelector:
+        kubernetes.io/arch: amd64
       initContainers:
         - name: wait-longhorn-manager
           image: longhornio/longhorn-manager:v1.6.0
@@ -4518,6 +4520,8 @@ spec:
         app.kubernetes.io/version: v1.6.0
         app: longhorn-ui
     spec:
+      nodeSelector:
+        kubernetes.io/arch: amd64
       serviceAccountName: longhorn-ui-service-account
       affinity:
         podAntiAffinity:

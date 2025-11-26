@@ -1830,7 +1830,8 @@ spec:
         checksum/secret: 255dcce8b67f5c37243e6ea276cff641014c46a38d3b0f5e8dfcd0452562869e
         kubectl.kubernetes.io/default-container: grafana
     spec:
-      
+      nodeSelector:
+        kubernetes.io/arch: amd64
       serviceAccountName: kube-prometheus-stack-grafana
       automountServiceAccountToken: true
       shareProcessNamespace: false
@@ -2075,6 +2076,8 @@ spec:
         app.kubernetes.io/version: "2.17.0"
         release: kube-prometheus-stack
     spec:
+      nodeSelector:
+        kubernetes.io/arch: amd64
       automountServiceAccountToken: true
       hostNetwork: false
       serviceAccountName: kube-prometheus-stack-kube-state-metrics
@@ -2167,6 +2170,8 @@ spec:
         app.kubernetes.io/name: kube-prometheus-stack-prometheus-operator
         app.kubernetes.io/component: prometheus-operator
     spec:
+      nodeSelector:
+        kubernetes.io/arch: amd64
       containers:
         - name: kube-prometheus-stack
           image: "quay.io/prometheus-operator/prometheus-operator:v0.86.0"
