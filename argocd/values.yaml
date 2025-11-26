@@ -1304,6 +1304,9 @@ server:
     hostname: ""
     termination_policy: None
     termination_type: passthrough
+  backendTLSPolicy:
+    enabled: false
+    hostname: ""
   runtimeClassName: ""
   service:
     annotations: {}
