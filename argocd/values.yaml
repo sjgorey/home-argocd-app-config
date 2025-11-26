@@ -1316,15 +1316,13 @@ server:
     loadBalancerClass: ""
     loadBalancerIP: ""
     loadBalancerSourceRanges: []
-    nodePortHttp: 30080
-    nodePortHttps: 30443
     servicePortHttp: 80
     servicePortHttpName: http
     servicePortHttps: 443
     servicePortHttpsAppProtocol: ""
     servicePortHttpsName: https
     sessionAffinity: None
-    type: LoadBalancer
+    type: ClusterIP
   serviceAccount:
     annotations: {}
     automountServiceAccountToken: true
