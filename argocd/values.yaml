@@ -1251,6 +1251,9 @@ server:
   httproute:
     enabled: false
     hostname: ""
+  grpcroute:
+    enabled: false
+    hostname: ""
   metrics:
     enabled: false
     service:
