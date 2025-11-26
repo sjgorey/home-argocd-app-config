@@ -39,7 +39,7 @@ spec:
             memory: "4Gi"
         env:
         - name: POOL_URL
-          value: "p2pool.io:3333"
+          value: "pool.hashvault.pro:443"
         - name: POOL_USER
           valueFrom:
             secretKeyRef:
