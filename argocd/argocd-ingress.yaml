@@ -4,8 +4,13 @@ metadata:
   name: argocd-ingress  # Matches your existing name
   namespace: argocd
   annotations:
-    traefik.ingress.kubernetes.io/router.entrypoints: web
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
 spec:
+  tls:
+  - hosts:
+    - argocd.example.com
+    secretName: argocd-tls-secret
   rules:
   - host: argocd.example.com
     http:
