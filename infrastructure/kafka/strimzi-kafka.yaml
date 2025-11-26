@@ -22128,6 +22128,8 @@ spec:
         name: strimzi-cluster-operator
         strimzi.io/kind: cluster-operator
     spec:
+      nodeSelector:
+        kubernetes.io/arch: amd64
       serviceAccountName: strimzi-cluster-operator
       volumes:
         - name: strimzi-tmp
