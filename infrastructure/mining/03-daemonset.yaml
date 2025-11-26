@@ -39,7 +39,7 @@ spec:
             memory: "4Gi"
         env:
         - name: POOL_URL
-          value: "pool.hashvault.pro:443"
+          value: "gulf.moneroocean.stream:10128"
         - name: POOL_USER
           valueFrom:
             secretKeyRef:
