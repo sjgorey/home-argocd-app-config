@@ -2294,6 +2294,8 @@ spec:
           requests:
             storage: 10Gi
         storageClassName: longhorn
+  nodeSelector:
+    kubernetes.io/arch: amd64
   affinity:
     podAntiAffinity:
       preferredDuringSchedulingIgnoredDuringExecution:
@@ -2394,6 +2396,8 @@ spec:
     outOfOrderTimeWindow: 0s
   walCompression: true
   routePrefix: "/"
+  nodeSelector:
+    kubernetes.io/arch: amd64
   serviceAccountName: kube-prometheus-stack-prometheus
   serviceMonitorSelector:
     matchLabels:
