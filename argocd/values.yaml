@@ -1049,6 +1049,9 @@ repoServer:
     periodSeconds: 10
     successThreshold: 1
     timeoutSeconds: 1
+  httproute:
+    enabled: false
+    hostname: ""
   metrics:
     enabled: false
     service:
@@ -1242,6 +1245,9 @@ server:
     periodSeconds: 10
     successThreshold: 1
     timeoutSeconds: 1
+  httproute:
+    enabled: false
+    hostname: ""
   metrics:
     enabled: false
     service:
