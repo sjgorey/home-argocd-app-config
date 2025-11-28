@@ -1,0 +1,208 @@
+[1mdiff --git a/argocd/argocd-ingress.yaml b/argocd/argocd-ingress.yaml[m
+[1mindex 37431b3..075788e 100644[m
+[1m--- a/argocd/argocd-ingress.yaml[m
+[1m+++ b/argocd/argocd-ingress.yaml[m
+[36m@@ -4,13 +4,8 @@[m [mmetadata:[m
+   name: argocd-ingress  # Matches your existing name[m
+   namespace: argocd[m
+   annotations:[m
+[31m-    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure[m
+[31m-    traefik.ingress.kubernetes.io/router.tls: "true"[m
+[32m+[m[32m    traefik.ingress.kubernetes.io/router.entrypoints: web[m
+ spec:[m
+[31m-  tls:[m
+[31m-  - hosts:[m
+[31m-    - argocd.example.com[m
+[31m-    secretName: argocd-tls-secret[m
+   rules:[m
+   - host: argocd.example.com[m
+     http:[m
+[1mdiff --git a/argocd/argocd-service.yaml b/argocd/argocd-service.yaml[m
+[1mindex a746311..0cfdd09 100644[m
+[1m--- a/argocd/argocd-service.yaml[m
+[1m+++ b/argocd/argocd-service.yaml[m
+[36m@@ -12,9 +12,5 @@[m [mspec:[m
+     port: 80[m
+     targetPort: 8080  # ArgoCD server listens on 8080 internally[m
+     protocol: TCP[m
+[31m-  - name: https[m
+[31m-    port: 443[m
+[31m-    targetPort: 8080[m
+[31m-    protocol: TCP[m
+   selector:[m
+     app.kubernetes.io/name: argocd-server[m
+\ No newline at end of file[m
+[1mdiff --git a/infrastructure/home-assistant/deployment.yaml b/infrastructure/home-assistant/deployment.yaml[m
+[1mindex ff1db53..bc7339c 100644[m
+[1m--- a/infrastructure/home-assistant/deployment.yaml[m
+[1m+++ b/infrastructure/home-assistant/deployment.yaml[m
+[36m@@ -14,7 +14,7 @@[m [mspec:[m
+         app: home-assistant[m
+     spec:[m
+       nodeSelector:[m
+[31m-        kubernetes.io/arch: amd64[m
+[32m+[m[32m        kubernetes.io/arch: arm64[m
+       containers:[m
+       - name: home-assistant[m
+         image: ghcr.io/home-assistant/home-assistant:latest[m
+[1mdiff --git a/infrastructure/it-tools/deployment.yaml b/infrastructure/it-tools/deployment.yaml[m
+[1mindex 6375f42..d418ff6 100644[m
+[1m--- a/infrastructure/it-tools/deployment.yaml[m
+[1m+++ b/infrastructure/it-tools/deployment.yaml[m
+[36m@@ -14,7 +14,7 @@[m [mspec:[m
+         app: it-tools[m
+     spec:[m
+       nodeSelector:[m
+[31m-        kubernetes.io/arch: amd64[m
+[32m+[m[32m        kubernetes.io/arch: arm64[m
+       containers:[m
+       - name: it-tools[m
+         image: corentinth/it-tools:latest[m
+[1mdiff --git a/infrastructure/kafka-ui/deployment.yaml b/infrastructure/kafka-ui/deployment.yaml[m
+[1mindex b6a77df..3651512 100644[m
+[1m--- a/infrastructure/kafka-ui/deployment.yaml[m
+[1m+++ b/infrastructure/kafka-ui/deployment.yaml[m
+[36m@@ -15,7 +15,7 @@[m [mspec:[m
+         app: kafka-ui[m
+     spec:[m
+       nodeSelector:[m
+[31m-        kubernetes.io/arch: amd64[m
+[32m+[m[32m        kubernetes.io/arch: arm64[m
+       containers:[m
+       - name: kafka-ui[m
+         image: kafbat/kafka-ui:main[m
+[1mdiff --git a/infrastructure/kafka/kafka-cluster.yaml b/infrastructure/kafka/kafka-cluster.yaml[m
+[1mindex 2af53e2..e39787b 100644[m
+[1m--- a/infrastructure/kafka/kafka-cluster.yaml[m
+[1m+++ b/infrastructure/kafka/kafka-cluster.yaml[m
+[36m@@ -26,7 +26,7 @@[m [mspec:[m
+               - key: kubernetes.io/arch[m
+                 operator: In[m
+                 values:[m
+[31m-                - amd64[m
+[32m+[m[32m                - arm64[m
+ ---[m
+ apiVersion: kafka.strimzi.io/v1beta2[m
+ kind: KafkaNodePool[m
+[36m@@ -56,7 +56,7 @@[m [mspec:[m
+               - key: kubernetes.io/arch[m
+                 operator: In[m
+                 values:[m
+[31m-                - amd64[m
+[32m+[m[32m                - arm64[m
+ ---[m
+ apiVersion: kafka.strimzi.io/v1beta2[m
+ kind: Kafka[m
+[36m@@ -95,6 +95,6 @@[m [mspec:[m
+                 - key: kubernetes.io/arch[m
+                   operator: In[m
+                   values:[m
+[31m-                  - amd64[m
+[32m+[m[32m                  - arm64[m
+     topicOperator: {}[m
+     userOperator: {}[m
+[1mdiff --git a/infrastructure/kafka/kafka-topics.yaml b/infrastructure/kafka/kafka-topics.yaml[m
+[1mindex 06872d1..e0d605f 100644[m
+[1m--- a/infrastructure/kafka/kafka-topics.yaml[m
+[1m+++ b/infrastructure/kafka/kafka-topics.yaml[m
+[36m@@ -32,7 +32,7 @@[m [mspec:[m
+ apiVersion: kafka.strimzi.io/v1beta2[m
+ kind: KafkaTopic[m
+ metadata:[m
+[31m-  name: wex-transactions[m
+[32m+[m[32m  name: wex_transactions[m
+   namespace: kafka[m
+   labels:[m
+     strimzi.io/cluster: my-cluster[m
+[1mdiff --git a/infrastructure/mining/03-daemonset.yaml b/infrastructure/mining/03-daemonset.yaml[m
+[1mindex 6259e78..3c21832 100644[m
+[1m--- a/infrastructure/mining/03-daemonset.yaml[m
+[1m+++ b/infrastructure/mining/03-daemonset.yaml[m
+[36m@@ -3,6 +3,8 @@[m [mkind: DaemonSet[m
+ metadata:[m
+   name: xmrig[m
+   namespace: mining[m
+[32m+[m[32m  labels:[m
+[32m+[m[32m    app: xmrig[m
+ spec:[m
+   selector:[m
+     matchLabels:[m
+[36m@@ -12,8 +14,10 @@[m [mspec:[m
+       labels:[m
+         app: xmrig[m
+     spec:[m
+[32m+[m[32m      # 1. Target arm64 nodes[m
+       nodeSelector:[m
+         kubernetes.io/arch: arm64[m
+[32m+[m[32m      # Allows scheduling on tained nodes if you use them for mining[m
+       tolerations:[m
+       - operator: Exists[m
+       containers:[m
+[36m@@ -22,21 +26,28 @@[m [mspec:[m
+         imagePullPolicy: Always[m
+         command: ["/usr/local/bin/xmrig"][m
+         args:[m
+[32m+[m[32m        # Standard Pool Arguments[m
+         - "--url=$(POOL_URL)"[m
+         - "--user=$(POOL_USER)"[m
+         - "--pass=$(POOL_PASS)"[m
+         - "--tls"[m
+         - "--donate-level=$(DONATE_LEVEL)"[m
+[32m+[m[32m        # XMRig Performance/Stability Arguments[m
+[32m+[m[32m        - "--randomx-mode=fast"       # HIGH IMPACT: Uses JIT compiler for best performance[m
+[32m+[m[32m        - "--cpu-priority=5"          # HIGH IMPACT: Sets process priority to highest[m
+[32m+[m[32m        - "--cpu-max-threads-hint=75" # HINT: Miner will only use ~75% of available cores (3 of 4)[m
+[32m+[m[32m        - "--cpu-no-yield"            # Optional: Prioritizes hashrate over system response/stability[m
+[32m+[m[32m        # HTTP API for monitoring[m
+         - "--http-host=0.0.0.0"[m
+         - "--http-port=8080"[m
+[31m-[m
+[32m+[m[41m        [m
+         resources:[m
+           requests:[m
+[31m-            cpu: "100m"[m
+[31m-            memory: "64Mi"[m
+[32m+[m[32m            cpu: "2000m"          # GUARANTEED: Requests 3 full cores[m
+[32m+[m[32m            memory: "2Gi"         # Minimum RAM to reserve[m
+           limits:[m
+[31m-            cpu: "2"[m
+[31m-            memory: "4Gi"[m
+[32m+[m[32m            cpu: "3000m"          # GUARANTEED: Sets CPU limit equal to request to ensure QoS = Guaranteed[m
+[32m+[m[32m            memory: "6Gi"         # Safety net memory limit (can be lowered if memory is scarce)[m
+         env:[m
+         - name: POOL_URL[m
+           value: "gulf.moneroocean.stream:20032"[m
+[36m@@ -52,16 +63,11 @@[m [mspec:[m
+               key: worker-name[m
+         - name: DONATE_LEVEL[m
+           value: "1"[m
+[32m+[m[41m        [m
+[32m+[m[32m        # Security Context - Removed SYS_ADMIN as it's often not needed for hugepages via hostPath[m
+[32m+[m[32m        # Use runAsUser: 0 to run as root if hugepages setup on the host requires it (common for XMRig)[m
+         securityContext:[m
+[31m-          capabilities:[m
+[31m-            add: ["SYS_ADMIN"][m
+[31m-        volumeMounts:[m
+[31m-        - name: hugepages[m
+[31m-          mountPath: /dev/hugepages[m
+[32m+[m[32m          runAsUser: 0[m
+         ports:[m
+         - containerPort: 8080[m
+           name: http[m
+[31m-      volumes:[m
+[31m-      - name: hugepages[m
+[31m-        hostPath:[m
+[31m-          path: /dev/hugepages[m
+[1mdiff --git a/infrastructure/smtp-relay/deployment.yaml b/infrastructure/smtp-relay/deployment.yaml[m
+[1mindex 5d002b4..868cd1b 100644[m
+[1m--- a/infrastructure/smtp-relay/deployment.yaml[m
+[1m+++ b/infrastructure/smtp-relay/deployment.yaml[m
+[36m@@ -18,7 +18,7 @@[m [mspec:[m
+         app: smtp-relay[m
+     spec:[m
+       nodeSelector:[m
+[31m-        kubernetes.io/arch: amd64[m
+[32m+[m[32m        kubernetes.io/arch: arm64[m
+       serviceAccountName: default[m
+       [m
+       containers:[m

@@ -32,7 +32,7 @@ spec:
 apiVersion: kafka.strimzi.io/v1beta2
 kind: KafkaTopic
 metadata:
-  name: wex-transactions
+  name: wex_transactions
   namespace: kafka
   labels:
     strimzi.io/cluster: my-cluster

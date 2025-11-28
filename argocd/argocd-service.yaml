@@ -12,9 +12,5 @@ spec:
     port: 80
     targetPort: 8080  # ArgoCD server listens on 8080 internally
     protocol: TCP
-  - name: https
-    port: 443
-    targetPort: 8080
-    protocol: TCP
   selector:
     app.kubernetes.io/name: argocd-server

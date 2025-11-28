@@ -15,7 +15,7 @@ spec:
         app: kafka-ui
     spec:
       nodeSelector:
-        kubernetes.io/arch: amd64
+        kubernetes.io/arch: arm64
       containers:
       - name: kafka-ui
         image: kafbat/kafka-ui:main

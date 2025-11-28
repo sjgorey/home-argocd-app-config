@@ -14,7 +14,7 @@ spec:
         app: it-tools
     spec:
       nodeSelector:
-        kubernetes.io/arch: amd64
+        kubernetes.io/arch: arm64
       containers:
       - name: it-tools
         image: corentinth/it-tools:latest
