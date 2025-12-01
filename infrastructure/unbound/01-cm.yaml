@@ -33,11 +33,13 @@ data:
         local-data: "node22.home.local. IN A 192.168.1.22"
         local-data: "node23.home.local. IN A 192.168.1.23"
         local-data: "node24.home.local. IN A 192.168.1.24"
+        local-data: "home.local. IN A 192.168.1.240"
 
-        local-zone: "example.com." static
-        local-data: "longhorn.example.com. IN A 192.168.1.240"
+        # Wildcard for example.com to point to cluster nodes
+        local-zone: "example.com." redirect
+        local-data: "example.com. IN A 192.168.1.240"
 
-
+        
     forward-zone:
         name: "."
         forward-addr: 8.8.8.8

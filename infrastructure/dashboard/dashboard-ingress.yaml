@@ -7,10 +7,10 @@ metadata:
     app.kubernetes.io/name: kubernetes-dashboard
     app.kubernetes.io/component: ingress
   annotations:
-    kubernetes.io/ingress.class: traefik
+    kubernetes.io/ingressClassName: traefik
     traefik.ingress.kubernetes.io/router.entrypoints: web
     # Backend protocol is HTTP since dashboard is running insecure
-    traefik.ingress.kubernetes.io/service.serversscheme: http
+    # traefik.ingress.kubernetes.io/service.serversscheme: http
 spec:
   rules:
   - host: dashboard.example.com  # Change this to your actual domain
