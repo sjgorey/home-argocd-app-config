@@ -1,0 +1,112 @@
+---
+# CronJob to clean up stale NFS mounts in longhorn-manager pods
+# This works around a Longhorn bug where NFS mounts aren't cleaned up after backups
+# Runs 5 minutes after scheduled backups to clean up leftover mounts
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: longhorn-nfs-mount-cleanup
+  namespace: longhorn-system
+spec:
+  # Run at 2:35 AM and 8:35 PM (5 minutes after backup schedule)
+  schedule: "35 2,20 * * *"
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        metadata:
+          labels:
+            app: longhorn-nfs-cleanup
+        spec:
+          serviceAccountName: longhorn-nfs-cleanup
+          restartPolicy: OnFailure
+          containers:
+          - name: cleanup
+            image: bitnami/kubectl:1.31
+            command:
+            - /bin/bash
+            - -c
+            - |
+              set -e
+              echo "Starting NFS mount cleanup at $(date)"
+              
+              # Get all longhorn-manager pods
+              PODS=$(kubectl get pods -n longhorn-system -l app=longhorn-manager -o jsonpath='{.items[*].metadata.name}')
+              
+              if [ -z "$PODS" ]; then
+                echo "No longhorn-manager pods found"
+                exit 0
+              fi
+              
+              CLEANED=0
+              TOTAL=0
+              
+              for pod in $PODS; do
+                TOTAL=$((TOTAL + 1))
+                echo "Checking pod: $pod"
+                
+                # Check if mount exists
+                if kubectl exec -n longhorn-system "$pod" -- mount 2>/dev/null | grep -q longhorn-backupstore; then
+                  echo "  Found stale mount, cleaning..."
+                  
+                  # Force unmount
+                  kubectl exec -n longhorn-system "$pod" -- sh -c \
+                    "umount -f -l /var/lib/longhorn-backupstore-mounts/192_168_1_12/mnt/longhorn-backups 2>/dev/null || true; \
+                     umount -f -l /var/lib/longhorn-backupstore-mounts/192_168_1_12/mnt 2>/dev/null || true; \
+                     umount -f -l /var/lib/longhorn-backupstore-mounts/192_168_1_12 2>/dev/null || true"
+                  
+                  # Verify cleanup
+                  if kubectl exec -n longhorn-system "$pod" -- mount 2>/dev/null | grep -q longhorn-backupstore; then
+                    echo "  ⚠️  WARNING: Mount still present after cleanup"
+                  else
+                    echo "  ✓ Cleaned successfully"
+                    CLEANED=$((CLEANED + 1))
+                  fi
+                else
+                  echo "  No stale mounts found"
+                fi
+              done
+              
+              echo ""
+              echo "Cleanup complete at $(date)"
+              echo "Checked: $TOTAL pods"
+              echo "Cleaned: $CLEANED pods"
+---
+# ServiceAccount for the cleanup job
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: longhorn-nfs-cleanup
+  namespace: longhorn-system
+---
+# Role to allow exec into longhorn-manager pods
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: longhorn-nfs-cleanup
+  namespace: longhorn-system
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list"]
+- apiGroups: [""]
+  resources: ["pods/exec"]
+  verbs: ["create"]
+---
+# RoleBinding for the cleanup job
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: longhorn-nfs-cleanup
+  namespace: longhorn-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: longhorn-nfs-cleanup
+subjects:
+- kind: ServiceAccount
+  name: longhorn-nfs-cleanup
+  namespace: longhorn-system
