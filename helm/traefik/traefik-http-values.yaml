@@ -1,0 +1,23 @@
+additionalArguments:
+  - "--entrypoints.websecure.http.tls=true"
+  - "--api.dashboard=true"
+  - "--ping=true"
+  - "--metrics.prometheus=true"
+  - "--metrics.prometheus.entrypoint=metrics"
+  - "--providers.kubernetescrd"
+  - "--providers.kubernetesingress"
+  - "--providers.kubernetesingress.ingressendpoint.publishedservice=kube-system/traefik"
+
+
+providers:
+  kubernetesCRD:
+    enabled: true
+    namespaces: []
+  kubernetesIngress:
+    enabled: true
+    namespaces: []
+  knative:
+    enabled: false
+    namespaces: []
+  file:
+    enabled: false

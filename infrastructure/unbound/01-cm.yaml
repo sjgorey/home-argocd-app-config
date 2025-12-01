@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: unbound-config
+  namespace: unbound
+data:
+  unbound.conf: |
+    server:
+        verbosity: 1
+        interface: 0.0.0.0
+        port: 53
+        do-ip4: yes
+        do-ip6: no
+        do-udp: yes
+        do-tcp: yes
+        access-control: 0.0.0.0/0 allow
+        harden-glue: yes
+        harden-dnssec-stripped: yes
+        edns-buffer-size: 1472
+        msg-cache-size: 64m
+        rrset-cache-size: 128m
+        cache-max-ttl: 86400
+
+        # Your local overrides
+        local-zone: "home.local." static
+        local-data: "router.home.local. IN A 192.168.1.1"
+        local-data: "nas.home.local. IN A 192.168.1.100"
+        local-data: "master.home.local. IN A 192.168.1.5"
+        local-data: "node5.home.local. IN A 192.168.1.5"
+        local-data: "node6.home.local. IN A 192.168.1.6"
+        local-data: "node12.home.local. IN A 192.168.1.12"
+        local-data: "node21.home.local. IN A 192.168.1.21"
+        local-data: "node22.home.local. IN A 192.168.1.22"
+        local-data: "node23.home.local. IN A 192.168.1.23"
+        local-data: "node24.home.local. IN A 192.168.1.24"
+
+        local-zone: "example.com." static
+        local-data: "longhorn.example.com. IN A 192.168.1.240"
+
+
+    forward-zone:
+        name: "."
+        forward-addr: 8.8.8.8
+        forward-addr: 8.8.4.4
+        forward-addr: 1.1.1.1
+        forward-addr: 1.0.0.1

@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: unbound-lan
+  namespace: unbound
+  annotations:
+    metallb.universe.tf/address-pool: home-lan
+spec:
+  type: LoadBalancer
+  loadBalancerIP: 192.168.1.250        # ← pick any free IP from the pool above
+  selector:
+    app: unbound
+  ports:
+    - name: dns-udp
+      port: 53
+      targetPort: 53
+      protocol: UDP
+    - name: dns-tcp
+      port: 53
+      targetPort: 53
+      protocol: TCP
