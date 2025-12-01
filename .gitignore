@@ -22,3 +22,6 @@ infrastructure/freshrss/secret-real.yaml
 
 # Mining secrets   
 infrastructure/mining/secret
+
+#smtp
+infrastructure/smtp-relay/local-secret.yaml

@@ -1,5 +1,0 @@
-# Exclude actual secret files (use templates instead)
-**/secret-local.yaml
-**/secrets-local.yaml
-**/*-secret.yaml
-**/smtp-credentials.yaml
