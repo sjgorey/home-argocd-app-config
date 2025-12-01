@@ -14,11 +14,14 @@ This setup includes:
 
 ## Files Overview
 
-- `prometheus-stack.yaml` - Main kube-prometheus-stack Helm-generated manifests
-- `prometheus-ingress.yaml` - Traefik ingress for Prometheus server access
-- `grafana-ingress.yaml` - Traefik ingress for Grafana dashboard access  
-- `tls-secrets.yaml` - TLS certificates for HTTPS access
+- `prometheus-stack.yaml` - Main kube-prometheus-stack manifests (TLS disabled for HTTP access)
+- `prometheus-operator-crds.yaml` - ConfigMap with CRD installation instructions
+- `prometheus-ingress.yaml` - Traefik ingress for Prometheus server (HTTP)
+- `grafana-ingress.yaml` - Traefik ingress for Grafana dashboard (HTTP)
+- `alertmanager-ingress.yaml` - Traefik ingress for AlertManager (HTTP)
 - `additional-monitors.yaml` - Additional ServiceMonitors for comprehensive monitoring
+- `install-prometheus-stack.sh` - Automated installation script with proper ordering
+- `tls-secrets.yaml` - **DEPRECATED** - TLS disabled, this file is not used
 
 ## Configuration
 
@@ -27,16 +30,20 @@ This setup includes:
 - **Grafana**: 10GB Longhorn storage for dashboard data
 - **AlertManager**: 10GB Longhorn storage for alert data
 
-### Access Credentials
+### Access Configuration
 - **Grafana**: 
   - Admin Username: `admin`
   - Admin Password: `admin123` (change this!)
-  - Web Access: `https://grafana.example.com`
-  - Ingress Auth: `admin / grafana123`
+  - Web Access: `http://grafana.example.com` (HTTP - no TLS)
+  - No basic auth configured (private network only)
 
 - **Prometheus**:
-  - Web Access: `https://prometheus.example.com`  
-  - Ingress Auth: `admin / prometheus123`
+  - Web Access: `http://prometheus.example.com` (HTTP - no TLS)
+  - No authentication (private network only)
+
+- **AlertManager**:
+  - Web Access: `http://alertmanager.example.com` (HTTP - no TLS)
+  - No authentication (private network only)
 
 ### Resource Limits
 - **Prometheus**: 250m-1000m CPU, 1-2Gi RAM
@@ -45,37 +52,60 @@ This setup includes:
 
 ## Installation
 
-### 1. Update Domain Names
+### Option 1: Automated Installation (Recommended)
 ```bash
-# Update domains in ingress files
-sed -i 's/grafana.example.com/grafana.yourdomain.com/g' grafana-ingress.yaml
-sed -i 's/prometheus.example.com/prometheus.yourdomain.com/g' prometheus-ingress.yaml
-sed -i 's/grafana.example.com/grafana.yourdomain.com/g' tls-secrets.yaml
-sed -i 's/prometheus.example.com/prometheus.yourdomain.com/g' tls-secrets.yaml
+# Run the installation script
+./install-prometheus-stack.sh
 ```
 
-### 2. Update Passwords
+This script will:
+1. Install Prometheus Operator CRDs
+2. Deploy the Prometheus stack
+3. Configure ingress routes
+4. Wait for pods to be ready
+5. Display access information
+
+### Option 2: Manual Installation
 ```bash
-# Generate new password hashes
-htpasswd -nb admin your-new-password | base64 -w 0
+# 1. Install CRDs first
+kubectl apply --server-side -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/v0.86.0/example/prometheus-operator-crd/monitoring.coreos.com_alertmanagerconfigs.yaml
+kubectl apply --server-side -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/v0.86.0/example/prometheus-operator-crd/monitoring.coreos.com_alertmanagers.yaml
+kubectl apply --server-side -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/v0.86.0/example/prometheus-operator-crd/monitoring.coreos.com_podmonitors.yaml
+kubectl apply --server-side -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/v0.86.0/example/prometheus-operator-crd/monitoring.coreos.com_probes.yaml
+kubectl apply --server-side -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/v0.86.0/example/prometheus-operator-crd/monitoring.coreos.com_prometheusagents.yaml
+kubectl apply --server-side -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/v0.86.0/example/prometheus-operator-crd/monitoring.coreos.com_prometheuses.yaml
+kubectl apply --server-side -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/v0.86.0/example/prometheus-operator-crd/monitoring.coreos.com_prometheusrules.yaml
+kubectl apply --server-side -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/v0.86.0/example/prometheus-operator-crd/monitoring.coreos.com_scrapeconfigs.yaml
+kubectl apply --server-side -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/v0.86.0/example/prometheus-operator-crd/monitoring.coreos.com_servicemonitors.yaml
+kubectl apply --server-side -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/v0.86.0/example/prometheus-operator-crd/monitoring.coreos.com_thanosrulers.yaml
 
-# Update the secrets in grafana-ingress.yaml and prometheus-ingress.yaml
-```
-
-### 3. Deploy via ArgoCD
-```bash
-# Apply the ArgoCD application (if not using infrastructure.yaml)
-kubectl apply -f ../prometheus.yaml
-
-# Or apply manually for testing
+# 2. Deploy the stack
 kubectl apply -f prometheus-stack.yaml
-kubectl apply -f tls-secrets.yaml
-kubectl apply -f grafana-ingress.yaml
+
+# 3. Apply ingresses
 kubectl apply -f prometheus-ingress.yaml
+kubectl apply -f grafana-ingress.yaml
+kubectl apply -f alertmanager-ingress.yaml
+
+# 4. Apply additional monitors
 kubectl apply -f additional-monitors.yaml
 ```
 
-### 4. Verify Installation
+### Option 3: Deploy via ArgoCD
+```bash
+# The ArgoCD application will handle the deployment
+kubectl apply -f ../prometheus.yaml
+
+# ArgoCD will sync all manifests in this directory
+```
+
+### Update Domain Names (Optional)
+```bash
+# Update domains in ingress files if needed
+sed -i 's/example.com/yourdomain.com/g' *-ingress.yaml
+```
+
+### Verify Installation
 ```bash
 # Check monitoring namespace pods
 kubectl get pods -n monitoring
@@ -90,12 +120,38 @@ kubectl get ingress -n monitoring
 ## Access
 
 ### Grafana Dashboard
-- **URL**: `https://grafana.yourdomain.com`
-- **Login**: `admin / admin123`
+- **URL**: `http://grafana.example.com`
+- **Login**: `admin / admin123` (change after first login!)
 - **Features**:
   - Pre-configured Kubernetes dashboards
   - Prometheus data source configured
   - AlertManager integration
+  - No TLS (HTTP only for private network)
+
+### Prometheus Server
+- **URL**: `http://prometheus.example.com`
+- **Features**:
+  - Metrics exploration and querying
+  - No authentication (private network only)
+  - HTTP only (TLS disabled for simplicity)
+
+### AlertManager
+- **URL**: `http://alertmanager.example.com`
+- **Features**:
+  - Alert routing and management
+  - No authentication (private network only)
+  - HTTP only
+
+## Important Notes
+
+### Security Considerations
+- **TLS is disabled** - This setup uses HTTP only
+- **No authentication** - Suitable for private networks only
+- **Change Grafana password** - Default password should be changed immediately
+- For production use, consider:
+  - Enabling TLS with proper certificates
+  - Implementing authentication middleware
+  - Network policies to restrict access
 
 ### Prometheus Server
 - **URL**: `https://prometheus.yourdomain.com`  
