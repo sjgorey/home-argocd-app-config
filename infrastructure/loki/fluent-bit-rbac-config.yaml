@@ -99,6 +99,8 @@ data:
         Host loki.logging.svc.cluster.local
         Port 3100
         Labels job=fluentbit
+        label_keys $kubernetes['namespace_name'],$kubernetes['pod_name'],$kubernetes['container_name'],$kubernetes['host']
+        remove_keys kubernetes,stream
         auto_kubernetes_labels on
 
   parsers.conf: |
