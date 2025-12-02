@@ -44,7 +44,13 @@ spec:
               mountPath: /opt/unbound/etc/unbound/unbound.conf
               subPath: unbound.conf
               readOnly: true
+            - name: rpz
+              mountPath: /blocklist
+              readOnly: true
       volumes:
         - name: config
           configMap:
             name: unbound-config
+        - name: rpz
+          persistentVolumeClaim:
+            claimName: rpz-blocklist

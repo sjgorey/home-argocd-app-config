@@ -1,0 +1,36 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: rpz-generator
+  namespace: unbound
+spec:
+  schedule: "0 3 * * *" # every night at 3am
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          nodeSelector:
+            kubernetes.io/arch: amd64
+          restartPolicy: Never
+          containers:
+            - name: rpz-gen
+              image: alpine:3.19
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  apk add curl
+                  curl -s https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts \
+                  | grep "^0.0.0.0" \
+                  | awk '{print $2}' \
+                  | while read -r domain; do
+                      echo "local-zone: \"$domain\" always_nxdomain"
+                    done > /blocklist/blocklist.conf
+                  echo "Generated blocklist with $(wc -l < /blocklist/blocklist.conf) entries"
+              volumeMounts:
+                - name: rpz
+                  mountPath: /blocklist
+          volumes:
+            - name: rpz
+              persistentVolumeClaim:
+                claimName: rpz-blocklist
