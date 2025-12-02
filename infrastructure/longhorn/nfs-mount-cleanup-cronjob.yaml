@@ -25,7 +25,7 @@ spec:
           restartPolicy: OnFailure
           containers:
           - name: cleanup
-            image: bitnami/kubectl:1.31
+            image: alpine/k8s:1.31.2
             command:
             - /bin/bash
             - -c
