@@ -96,22 +96,21 @@ data:
           plaidItemAccessToken: ${PLAID_ACCESS_TOKEN_TCFCU}
           plaidAccountId: RDojb56qK9uq4Ywn8ng8saqaQxoQZmT486J0z
         # 063-ALL PURPOSE/SPECIAL CB
-        - fireflyAccountId: 12
+        - fireflyAccountId: 6
           plaidItemAccessToken: ${PLAID_ACCESS_TOKEN_TCFCU}
           plaidAccountId: OwoQBJ5D4minrYVyAyeAcPgPCgPpEopO3HVM7Lq7
         # 2409-REWARDS CHECKING
-        - fireflyAccountId: 13
+        - fireflyAccountId: 7
           plaidItemAccessToken: ${PLAID_ACCESS_TOKEN_TCFCU}
           plaidAccountId: VB5OM7yKx9SdxEbg5gz5s0j0YVqYMEHXQ0Zmv
         # 631-ALL PURPOSE/SPECIAL CB
-        - fireflyAccountId: 14
+        - fireflyAccountId: 8
           plaidItemAccessToken: ${PLAID_ACCESS_TOKEN_TCFCU}
           plaidAccountId: MXEZPar6bOTJnxK1B1gBf3p3k8xkKOu5QA4bJ
         # Capital One CC
-        - fireflyAccountId: 82
+        - fireflyAccountId: 1
           plaidItemAccessToken: ${PLAID_ACCESS_TOKEN_CAPITALONE}
           plaidAccountId: Ezr4B9OaKEUv0RRebpgghvBPen7Xb8CdENNbj
-
       product:
         name: Firefly Plaid Connector 2
     logging:
