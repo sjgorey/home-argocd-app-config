@@ -1,0 +1,17 @@
+# 10-app-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: investbrain-config
+  namespace: investbrain
+data:
+  APP_URL: "https://investbrain.example.com"  # Update with your domain
+  DB_CONNECTION: pgsql
+  DB_HOST: postgres
+  DB_PORT: "5432"
+  DB_DATABASE: investbrain
+  DB_USERNAME: investbrain
+  SESSION_DRIVER: redis
+  QUEUE_CONNECTION: redis
+  CACHE_STORE: redis
+  REDIS_HOST: redis

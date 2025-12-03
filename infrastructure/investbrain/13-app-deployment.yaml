@@ -1,0 +1,59 @@
+# 13-app-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: investbrain
+  namespace: investbrain
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: investbrain
+  template:
+    metadata:
+      labels:
+        app: investbrain
+    spec:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+      securityContext:
+        fsGroup: 1000
+      containers:
+        - name: investbrain
+          image: investbrainapp/investbrain:latest
+          envFrom:
+            - configMapRef:
+                name: investbrain-config
+            - secretRef:
+                name: investbrain-secret
+          ports:
+            - containerPort: 80
+              name: http
+          volumeMounts:
+            - name: storage
+              mountPath: /var/app/storage
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "300m"
+            limits:
+              memory: "1Gi"
+              cpu: "800m"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 60
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 10
+      volumes:
+        - name: storage
+          persistentVolumeClaim:
+            claimName: investbrain-storage

@@ -1,0 +1,70 @@
+# 05-postgres-statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  namespace: investbrain
+spec:
+  serviceName: postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      initContainers:
+        - name: init-pgdata
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - |
+              if [ ! -d /mnt/data/pgdata ]; then
+                echo "Creating /mnt/data/pgdata..."
+                mkdir -p /mnt/data/pgdata
+                chown 999:999 /mnt/data/pgdata
+              else
+                echo "/mnt/data/pgdata already exists"
+              fi
+          volumeMounts:
+            - name: data
+              mountPath: /mnt/data
+          securityContext:
+            runAsUser: 0
+      nodeSelector:
+        kubernetes.io/arch: amd64
+      containers:
+        - name: postgres
+          image: postgres:15-alpine
+          args:
+            - postgres
+            - -c
+            - log_min_messages=error
+          env:
+            - name: PGDATA
+              value: /mnt/data/pgdata
+          envFrom:
+            - configMapRef:
+                name: postgres-config
+            - secretRef:
+                name: postgres-secret
+          ports:
+            - containerPort: 5432
+              name: postgres
+          volumeMounts:
+            - name: data
+              mountPath: /mnt/data
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "200m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: postgres-data

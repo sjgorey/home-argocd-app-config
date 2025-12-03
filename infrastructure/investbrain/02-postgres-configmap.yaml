@@ -1,0 +1,9 @@
+# 02-postgres-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-config
+  namespace: investbrain
+data:
+  POSTGRES_DB: investbrain
+  POSTGRES_USER: investbrain
