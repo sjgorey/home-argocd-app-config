@@ -5,6 +5,7 @@ metadata:
   namespace: n8n
   labels:
     app: n8n
+    backup: "true"
 spec:
   accessModes:
     - ReadWriteOnce

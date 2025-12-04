@@ -3,6 +3,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: home-assistant-config
   namespace: home
+  labels:
+    backup: "true"
 spec:
   accessModes:
     - ReadWriteOnce

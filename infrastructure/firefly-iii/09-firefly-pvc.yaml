@@ -4,6 +4,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: firefly-storage
   namespace: firefly-iii
+  labels:
+    backup: "true"
 spec:
   accessModes:
     - ReadWriteOnce

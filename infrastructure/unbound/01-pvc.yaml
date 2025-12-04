@@ -3,6 +3,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: rpz-blocklist
   namespace: unbound
+  labels:
+    backup: "true"
 spec:
   accessModes:
     - ReadWriteMany

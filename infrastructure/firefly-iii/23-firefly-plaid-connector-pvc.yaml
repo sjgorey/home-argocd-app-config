@@ -3,6 +3,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: firefly-plaid-connector-cursors
   namespace: firefly-iii
+  labels:
+    backup: "true"
 spec:
   accessModes:
     - ReadWriteOnce
