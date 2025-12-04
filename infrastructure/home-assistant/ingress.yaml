@@ -2,7 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: home-assistant
-  namespace: home-assistant
+  namespace: home
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: web
     traefik.ingress.kubernetes.io/router.pathmatcher: Prefix
@@ -12,6 +12,16 @@ spec:
   ingressClassName: traefik
   rules:
   - host: home.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: home-assistant
+            port:
+              number: 8080
+  - host: home-assistant.gorco.us
     http:
       paths:
       - path: /
