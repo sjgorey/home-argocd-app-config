@@ -26,6 +26,3 @@ infrastructure/mining/secret
 #smtp
 infrastructure/smtp-relay/local-secret.yaml
 
-#investbrain
-infrastructure/investbrain/03-postgres-secret.yaml
-infrastructure/investbrain/11-app-secret.yaml
