@@ -30,3 +30,5 @@ data:
   PAPERLESS_STATICDIR: "/usr/src/paperless/static"
   PAPERLESS_CONSUMPTION_DIR: "/usr/src/paperless/consume"
   PAPERLESS_EXPORT_DIR: "/usr/src/paperless/export"
+  PAPERLESS_CSRF_TRUSTED_ORIGINS: "https://paperless.gorco.us,http://paperless.example.com"
+  DEBUG: "true"
