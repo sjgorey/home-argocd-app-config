@@ -30,3 +30,6 @@ infrastructure/smtp-relay/local-secret.yaml
 infrastructure/vaultwarden/tls-secret.yaml
 infrastructure/vaultwarden/tls.crt
 infrastructure/vaultwarden/tls.key
+
+# Open-WebUI secret
+infrastructure/open-webui/open-webui-secret.yaml
