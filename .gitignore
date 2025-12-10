@@ -26,3 +26,7 @@ infrastructure/mining/secret
 #smtp
 infrastructure/smtp-relay/local-secret.yaml
 
+#vaultwarden tls secret
+infrastructure/vaultwarden/tls-secret.yaml
+infrastructure/vaultwarden/tls.crt
+infrastructure/vaultwarden/tls.key

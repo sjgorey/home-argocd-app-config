@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vaultwarden
+  namespace: vaultwarden
+  labels:
+    app: vaultwarden
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vaultwarden
+  template:
+    metadata:
+      labels:
+        app: vaultwarden
+    spec:
+      nodeSelector:
+        kubernetes.io/arch: arm64
+      containers:
+      - name: vaultwarden
+        image: vaultwarden/server:latest
+        ports:
+        - containerPort: 80
+        env:
+        - name: WEBSOCKET_ENABLED
+          value: "true"
+        - name: SIGNUPS_ALLOWED
+          value: "true"                  # blocks open registration
+        - name: INVITATIONS_ALLOWED
+          value: "true"                   # lets you/your family invite others
+        - name: DOMAIN
+          value: "https://vault.example.com"   # change to your actual URL
+        - name: ROCKET_WORKERS
+          value: "4"
+        - name: SMTP_HOST
+          value: "smtp-relay.smtp-relay.svc.cluster.local"          # or your provider
+        - name: SMTP_FROM
+          value: "gorco@maine.rr.com"
+        - name: SMTP_PORT
+          value: "25"
+        - name: SMTP_SECURITY
+          value: "off"                # or "force_tls" or "none"
+        - name: SMTP_TIMEOUT
+          value: "15"
+        volumeMounts:
+        - name: data
+          mountPath: /data
+        resources:
+          requests:
+            cpu: "50m"
+            memory: "128Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: vaultwarden-data
