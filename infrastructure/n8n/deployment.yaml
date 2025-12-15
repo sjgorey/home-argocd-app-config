@@ -67,7 +67,8 @@ spec:
           value: "true"
         - name: N8N_DIAGNOSTICS_ENABLED
           value: "false"
-        
+        - name: N8N_COMMUNITY_NODES_ENABLED
+          value: "true"
         # SQLite database configuration
         - name: DB_TYPE
           value: "sqlite"
