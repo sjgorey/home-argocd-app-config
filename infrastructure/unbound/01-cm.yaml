@@ -28,6 +28,8 @@ data:
         local-data: "master.home.local. IN A 192.168.1.5"
         local-data: "node5.home.local. IN A 192.168.1.5"
         local-data: "node6.home.local. IN A 192.168.1.6"
+        local-data: "node7.home.local. IN A 192.168.1.7"
+        local-data: "ollama.home.local. IN A 192.168.1.10"
         local-data: "node12.home.local. IN A 192.168.1.12"
         local-data: "node21.home.local. IN A 192.168.1.21"
         local-data: "node22.home.local. IN A 192.168.1.22"
