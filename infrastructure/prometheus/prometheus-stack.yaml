@@ -2010,6 +2010,8 @@ spec:
               value: /var/log/grafana
             - name: GF_PATHS_PLUGINS
               value: /var/lib/grafana/plugins
+            - name: GF_DATE_FORMATS_DEFAULT_TIMEZONE
+              value: "EST"
             - name: GF_PATHS_PROVISIONING
               value: /etc/grafana/provisioning
             - name: GOMEMLIMIT
