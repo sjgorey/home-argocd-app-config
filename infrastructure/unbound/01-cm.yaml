@@ -8,9 +8,10 @@ data:
     server:
         verbosity: 1
         interface: 0.0.0.0
+        interface: ::0
         port: 53
         do-ip4: yes
-        do-ip6: no
+        do-ip6: yes
         do-udp: yes
         do-tcp: yes
         access-control: 0.0.0.0/0 allow
@@ -20,6 +21,10 @@ data:
         msg-cache-size: 64m
         rrset-cache-size: 128m
         cache-max-ttl: 86400
+        logfile: ""
+        log-queries: yes
+        log-replies: yes
+
 
         # Your local overrides
         local-zone: "home.local." static
