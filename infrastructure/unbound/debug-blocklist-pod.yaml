@@ -9,6 +9,13 @@ spec:
     - name: debug
       image: alpine:3.19
       command: ["sleep", "3600"]
+      resources:
+        requests:
+          cpu: 10m
+          memory: 32Mi
+        limits:
+          cpu: 100m
+          memory: 128Mi
       volumeMounts:
         - name: rpz
           mountPath: /blocklist
