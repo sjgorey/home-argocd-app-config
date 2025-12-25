@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Christmas Quiz</title>
+<style>
+body { 
+    font-family: Arial, sans-serif; 
+    text-align: center; 
+    margin: 20px; 
+    font-size: 1.2em; /* mobile-friendly */
+}
+
+/* Ensure question wraps and stays centered */
+#questionDiv {
+    margin: 20px 0;
+    max-width: 90%;        /* leave some margin on sides for small screens */
+    word-wrap: break-word; /* break long words if needed */
+    white-space: normal;   /* allow wrapping */
+    display: inline-block; /* center nicely */
+    text-align: center;    /* center text inside the div */
+    font-size: 1.3em;     /* slightly bigger font for readability */
+    line-height: 1.4em;   /* better spacing for multiple lines */
+}
+
+/* Options/buttons layout */
+#optionsDiv {
+    display: flex;
+    flex-direction: column;
+    align-items: center;  /* center horizontally */
+    gap: 10px;            /* spacing between buttons */
+}
+
+/* Leaderboard styling */
+#leaderboardDiv {
+    margin: 20px 0;
+}
+
+/* Larger buttons for mobile */
+button { 
+    margin: 5px; 
+    padding: 15px 25px; 
+    font-size: 1.2em; 
+    cursor: pointer; 
+    min-width: 150px;
+}
+
+/* Input styling */
+input { 
+    padding: 10px; 
+    font-size: 1.2em; 
+}
+
+/* Headings and user name */
+h1 { color: #c0392b; font-size: 2em; }
+#userName { font-weight: bold; margin-bottom: 10px; font-size: 1.3em; }
+
+/* Leaderboard top positions */
+p.top1 { font-weight: bold; color: gold; }
+p.top2 { font-weight: bold; color: silver; }
+p.top3 { font-weight: bold; color: #cd7f32; }
+
+/* Make the restart button nicely centered */
+#restartDiv {
+    margin-top: 20px;
+    text-align: center;
+}
+</style>
+</head>
+<body>
+
+<h1>🎄 Christmas Quiz 🎄</h1>
+
+<!-- Join/Login Screen -->
+<div id="joinDiv">
+    <input type="text" id="guestName" placeholder="Enter your name" />
+    <button onclick="joinQuiz()">Join Quiz</button>
+</div>
+
+<!-- Quiz Screen -->
+<div id="quizDiv" style="display:none;">
+    <div id="userName"></div>
+    <div id="questionNumber"></div>
+    <div id="questionDiv"></div>
+    <div id="optionsDiv"></div>
+    <!-- Steve's Restart Game button -->
+    <div id="restartDiv" style="margin-top:20px; display:none;">
+        <button onclick="restartGame()">Restart Game</button>
+    </div>
+</div>
+
+
+<!-- Summary Screen -->
+<div id="summaryDiv" style="display:none;">
+    <h2>Quiz Summary</h2>
+    <div id="summaryList"></div>
+    <button onclick="showLeaderboard()">View Leaderboard</button>
+</div>
+
+<!-- Leaderboard Screen -->
+<div id="leaderboardDiv" style="display:none;">
+    <h2>Leaderboard (Live)</h2>
+    <div id="leaderboardList"></div>
+</div>
+
+<script>
+let guestId = null;
+let guestName = null;
+let currentQ = 1;
+let TOTAL_Q = 25; // Will be updated dynamically
+let leaderboardInterval = null;
+
+// Fetch total number of questions from backend (includes bonus)
+async function fetchTotalQuestions() {
+    try {
+        const res = await fetch('/api/dbtest');
+        const data = await res.json();
+        if (data.questions_in_db) {
+            TOTAL_Q = data.questions_in_db;
+        }
+    } catch (e) {
+        console.error('Failed to fetch total questions:', e);
+    }
+}
+
+// Phase 1: Join/Login
+async function joinQuiz() {
+    await fetchTotalQuestions();
+
+    const nameInput = document.getElementById('guestName').value.trim();
+    if (!nameInput) { alert("Enter your name"); return; }
+
+    guestName = nameInput;
+    guestId = "guest_" + Math.floor(Math.random() * 10000);
+
+    const res = await fetch("/api/join", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: guestId, name: guestName })
+    });
+    const data = await res.json();
+
+    // Resume from last answered question
+    currentQ = data.last_question;
+
+    document.getElementById('joinDiv').style.display = "none";
+    document.getElementById('quizDiv').style.display = "block";
+
+    // Show user's name
+    document.getElementById('userName').innerText = `Player: ${guestName}${guestName.toLowerCase() === "steve" ? " (Admin)" : ""}`;
+
+    // Show leaderboard and start live updates for everyone
+    document.getElementById('leaderboardDiv').style.display = "block";
+    startLeaderboardLive();
+
+    // Show restart button only for Steve
+    if (guestName.toLowerCase() === "steve") {
+        document.getElementById('restartDiv').style.display = "block";
+    } else {
+        document.getElementById('restartDiv').style.display = "none";
+    }
+
+    loadQuestion();
+}
+
+// Phase 2: Load Question
+async function loadQuestion() {
+
+    if (currentQ > TOTAL_Q) {
+        showSummary();
+        return;
+    }
+// Show summary of all questions and answers
+async function showSummary() {
+    document.getElementById('quizDiv').style.display = "none";
+    document.getElementById('leaderboardDiv').style.display = "none";
+    document.getElementById('summaryDiv').style.display = "block";
+
+    const res = await fetch(`/api/review/${guestId}`);
+    const questions = await res.json();
+    const summaryList = document.getElementById('summaryList');
+    summaryList.innerHTML = questions.map(q => {
+        let answerText = q.guest_answer !== null ? `Your answer: <b>${q.options[q.guest_answer-1] || 'N/A'}</b>` : '<i>No answer</i>';
+        let correctText = q.is_correct === true ? '<span style="color:green;">✔️ Correct</span>' : (q.is_correct === false ? `<span style="color:red;">❌ Wrong (Correct: <b>${q.options[q.correct_answer-1]}</b>)</span>` : '');
+        return `<div style="margin-bottom:15px;"><b>Q${q.id}:</b> ${q.question}<br>${answerText}<br>${correctText}</div>`;
+    }).join("");
+}
+
+    const res = await fetch(`/api/question/${currentQ}`);
+    const data = await res.json();
+    if (data.error) {
+        showLeaderboard();
+        startLeaderboardLive();
+        return;
+    }
+
+    // Display question number, highlight bonus for last question
+    document.getElementById('questionNumber').innerText =
+        currentQ === TOTAL_Q
+            ? `🎁 Bonus Question! (${currentQ} of ${TOTAL_Q})`
+            : `Question ${currentQ} of ${TOTAL_Q}`;
+
+    document.getElementById('questionDiv').innerText = data.question;
+
+    const optionsDiv = document.getElementById('optionsDiv');
+    optionsDiv.innerHTML = "";
+
+    data.options.forEach((opt, index) => {
+        const btn = document.createElement('button');
+        btn.innerText = opt;
+        btn.onclick = async () => {
+            await fetch("/api/answer", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ guest_id: guestId, question_id: currentQ, option: index + 1 })
+            });
+
+            currentQ++;
+            loadQuestion(); // move to next, including bonus
+        };
+        optionsDiv.appendChild(btn);
+    });
+}
+
+// Phase 3: Leaderboard
+async function updateLeaderboard() {
+    const res = await fetch("/api/leaderboard");
+    const leaderboard = await res.json();
+    const listDiv = document.getElementById('leaderboardList');
+    listDiv.innerHTML = leaderboard.map((g, idx) => {
+        let cls = "";
+        if (idx === 0) cls = "top1";
+        else if (idx === 1) cls = "top2";
+        else if (idx === 2) cls = "top3";
+        return `<p class="${cls}">${g.name}: ${g.score}</p>`;
+    }).join("");
+}
+
+function showLeaderboard() {
+    document.getElementById('quizDiv').style.display = "none";
+    document.getElementById('leaderboardDiv').style.display = "block";
+    updateLeaderboard();
+}
+
+function startLeaderboardLive() {
+    leaderboardInterval = setInterval(updateLeaderboard, 2000);
+}
+
+function stopLeaderboardLive() {
+    clearInterval(leaderboardInterval);
+    leaderboardInterval = null;
+}
+
+// Only Steve can restart the game for everyone
+async function restartGame() {
+    try {
+        const res = await fetch("/api/restart", { method: "POST" });
+        const data = await res.json();
+        console.log("Game restarted:", data);
+
+        currentQ = 1;
+
+        if (guestName.toLowerCase() === "steve") {
+            document.getElementById('quizDiv').style.display = "block";
+            document.getElementById('leaderboardDiv').style.display = "block";
+            document.getElementById('restartDiv').style.display = "block";
+
+            stopLeaderboardLive();
+            updateLeaderboard();
+            startLeaderboardLive();
+            loadQuestion();
+        } else {
+            document.getElementById('quizDiv').style.display = "block";
+            document.getElementById('leaderboardDiv').style.display = "none";
+            loadQuestion();
+        }
+    } catch (err) {
+        console.error("Failed to restart game:", err);
+    }
+}
+</script>
+
+</body>
+</html>

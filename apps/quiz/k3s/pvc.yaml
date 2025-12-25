@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: quiz-data
+  namespace: quiz
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn-amd64
+  resources:
+    requests:
+      storage: 1Gi

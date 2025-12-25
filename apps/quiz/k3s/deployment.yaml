@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: christmas-quiz
+  namespace: quiz
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: christmas-quiz
+  template:
+    metadata:
+      labels:
+        app: christmas-quiz
+    spec:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+      containers:
+      - name: quiz
+        image: registry.example.com/christmas-quiz:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+        volumeMounts:
+        - name: data
+          mountPath: /data
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: quiz-data
