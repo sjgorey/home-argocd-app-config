@@ -28,6 +28,13 @@ spec:
             limits:
               cpu: 100m
               memory: 128Mi
+          env:
+          - name: REGISTRY_HTTP_HEADERS_Access-Control-Allow-Origin
+            value: '[ "http://registry-ui.example.com" ]'
+          - name: REGISTRY_HTTP_HEADERS_Access-Control-Allow-Methods
+            value: '[ "HEAD", "GET", "OPTIONS", "DELETE" ]'
+          - name: REGISTRY_HTTP_HEADERS_Access-Control-Allow-Headers
+            value: '[ "Authorization", "Accept" ]'
       volumes:
         - name: registry-storage
           persistentVolumeClaim:
