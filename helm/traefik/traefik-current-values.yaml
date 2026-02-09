@@ -475,7 +475,8 @@ securityContext:
   readOnlyRootFilesystem: true
 service:
   additionalServices: {}
-  annotations: {}
+  annotations:
+    metallb.universe.tf/loadBalancerIPs: 192.168.1.240
   annotationsTCP: {}
   annotationsUDP: {}
   enabled: true

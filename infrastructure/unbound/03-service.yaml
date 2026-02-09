@@ -5,6 +5,7 @@ metadata:
   namespace: unbound
   annotations:
     metallb.universe.tf/ip-allocated-from-pool: metallb-pool
+    metallb.universe.tf/loadBalancerIPs: 192.168.1.241
 spec:
   type: LoadBalancer
   selector:
