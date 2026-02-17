@@ -8,7 +8,20 @@ spec:
   - 192.168.1.240-192.168.1.250   # Pick a free range outside DHCP
 ---
 apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: metallb-pool-ipv6
+  namespace: metallb-system
+spec:
+  addresses:
+  - 2603:7081:2601:400::f0-2603:7081:2601:400::ff   # IPv6 range
+---
+apiVersion: metallb.io/v1beta1
 kind: L2Advertisement
 metadata:
   name: l2-ad
   namespace: metallb-system
+spec:
+  ipAddressPools:
+  - metallb-pool
+  - metallb-pool-ipv6

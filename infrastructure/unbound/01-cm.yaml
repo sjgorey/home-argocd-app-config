@@ -15,6 +15,7 @@ data:
         do-udp: yes
         do-tcp: yes
         access-control: 0.0.0.0/0 allow
+        access-control: ::0/0 allow
         harden-glue: yes
         harden-dnssec-stripped: yes
         edns-buffer-size: 1472

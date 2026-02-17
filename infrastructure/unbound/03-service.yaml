@@ -4,10 +4,14 @@ metadata:
   name: unbound-lb
   namespace: unbound
   annotations:
-    metallb.universe.tf/ip-allocated-from-pool: metallb-pool
-    metallb.universe.tf/loadBalancerIPs: 192.168.1.241
+    metallb.universe.tf/ip-allocated-from-pool: metallb-pool,metallb-pool-ipv6
+    metallb.universe.tf/loadBalancerIPs: 192.168.1.241,2603:7081:2601:400::f1
 spec:
   type: LoadBalancer
+  ipFamilyPolicy: PreferDualStack
+  ipFamilies:
+  - IPv4
+  - IPv6
   selector:
     app: unbound
   ports:
