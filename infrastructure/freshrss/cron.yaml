@@ -15,9 +15,6 @@ spec:
             command:
               - php
               - /var/www/FreshRSS/app/actualize_script.php
-            envFrom:
-              - secretRef:
-                  name: freshrss-env
             volumeMounts:
               - name: freshrss-data
                 mountPath: /var/www/FreshRSS/data
