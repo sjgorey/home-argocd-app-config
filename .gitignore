@@ -1,3 +1,5 @@
+# Cloudflared secret
+infrastructure/cloudflared/secret.yaml
 /tls/*
 
 dashboard/token
