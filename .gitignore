@@ -35,3 +35,6 @@ infrastructure/vaultwarden/tls.key
 
 # Open-WebUI secret
 infrastructure/open-webui/open-webui-secret.yaml
+
+# Neo4j password secret
+infrastructure/neo4j/03-secret.yaml

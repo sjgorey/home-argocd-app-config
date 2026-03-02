@@ -20,6 +20,9 @@ spec:
           image: freshrss/freshrss:latest
           ports:
             - containerPort: 80
+          env:
+            - name: CRON_MIN
+              value: "15"
           resources:
             requests:
               cpu: 100m

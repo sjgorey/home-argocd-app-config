@@ -1,0 +1,15 @@
+# 08-neodash-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: neodash
+  namespace: neo4j
+spec:
+  type: ClusterIP
+  selector:
+    app: neodash
+  ports:
+    - name: web
+      port: 3000
+      targetPort: web
+      protocol: TCP

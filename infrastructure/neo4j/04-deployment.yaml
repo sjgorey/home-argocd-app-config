@@ -1,0 +1,68 @@
+# 04-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: neo4j
+  namespace: neo4j
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: neo4j
+  template:
+    metadata:
+      labels:
+        app: neo4j
+    spec:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+      enableServiceLinks: false
+      securityContext:
+        fsGroup: 7474
+      containers:
+        - name: neo4j
+          image: neo4j:latest
+          envFrom:
+            - configMapRef:
+                name: neo4j-config
+            - secretRef:
+                name: neo4j-secret
+          ports:
+            - name: http
+              containerPort: 7474
+              protocol: TCP
+            - name: bolt
+              containerPort: 7687
+              protocol: TCP
+          volumeMounts:
+            - name: neo4j-data
+              mountPath: /var/lib/neo4j/data
+            - name: neo4j-logs
+              mountPath: /var/lib/neo4j/logs
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "500m"
+            limits:
+              memory: "2Gi"
+              cpu: "2000m"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+      volumes:
+        - name: neo4j-data
+          persistentVolumeClaim:
+            claimName: neo4j-data
+        - name: neo4j-logs
+          emptyDir: {}

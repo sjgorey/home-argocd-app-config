@@ -1,0 +1,18 @@
+# 09-neodash-ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: neodash
+  namespace: neo4j
+spec:
+  rules:
+    - host: neodash.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: neodash
+                port:
+                  name: web

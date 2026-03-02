@@ -1,0 +1,23 @@
+# 05-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: neo4j
+  namespace: neo4j
+  annotations:
+    # optionally lock to a static IP from metallb pool
+    # metallb.universe.tf/loadBalancerIPs: 192.168.1.XXX
+spec:
+  type: LoadBalancer
+  selector:
+    app: neo4j
+  ports:
+    - name: http
+      port: 7474
+      targetPort: http
+      protocol: TCP
+    - name: bolt
+      port: 7687
+      targetPort: bolt
+      protocol: TCP
+  externalTrafficPolicy: Cluster

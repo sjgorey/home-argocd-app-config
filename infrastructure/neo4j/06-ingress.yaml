@@ -1,0 +1,18 @@
+# 06-ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: neo4j-browser
+  namespace: neo4j
+spec:
+  rules:
+    - host: neo4j.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: neo4j
+                port:
+                  name: http

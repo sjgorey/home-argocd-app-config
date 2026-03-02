@@ -1,0 +1,51 @@
+# 07-neodash-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: neodash
+  namespace: neo4j
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: neodash
+  template:
+    metadata:
+      labels:
+        app: neodash
+    spec:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+      containers:
+        - name: neodash
+          image: neo4jlabs/neodash:latest
+          ports:
+            - containerPort: 5005
+              name: web
+              protocol: TCP
+          env:
+            - name: REACT_APP_DEFAULT_NEO4J_URL
+              value: "bolt://neo4j:7687"
+            - name: REACT_APP_DEFAULT_NEO4J_USERNAME
+              value: "neo4j"
+            - name: REACT_APP_DEFAULT_NEO4J_PASSWORD_ENCRYPTED
+              value: "false"
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: web
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /
+              port: web
+            initialDelaySeconds: 10
+            periodSeconds: 10
