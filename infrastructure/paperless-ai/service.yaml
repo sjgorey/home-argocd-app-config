@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: paperless-ai
+  namespace: paperless-ngx # Keeping it in the same namespace is easier
+  labels:
+    app: paperless-ai
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 3000       # Port you'll use to access the UI/API
+    targetPort: 3001 # Default port the paperless-ai container listens on
+    protocol: TCP
+  selector:
+    app: paperless-ai

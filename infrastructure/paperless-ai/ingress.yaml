@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: paperless-ai-ingress
+  namespace: paperless-ngx
+  labels:
+    app: paperless-ai
+  annotations:
+    # Matches your existing entrypoints config
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+spec:
+  rules:
+  - host: paperless-ai.example.com  # Use a different subdomain
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: paperless-ai
+            port:
+              number: 3000

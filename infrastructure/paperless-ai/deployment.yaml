@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: paperless-ai
+  namespace: paperless-ngx
+  labels:
+    app: paperless-ai
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate 
+  selector:
+    matchLabels:
+      app: paperless-ai
+  template:
+    metadata:
+      labels:
+        app: paperless-ai 
+    spec:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+      containers:
+      - name: paperless-ai
+        image: clusterzx/paperless-ai:latest
+        imagePullPolicy: IfNotPresent
+        envFrom:
+        - configMapRef:
+            name: paperless-ai-config
+        env:
+        - name: PAPERLESS_API_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: paperless-ai-secrets
+              key: PAPERLESS_API_TOKEN
+        - name: PAPERLESS_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: paperless-ai-secrets
+              key: PAPERLESS_TOKEN
+        ports:
+        - name: http-ai        # Added a name here
+          containerPort: 3001 
+        securityContext:
+          runAsUser: 0 
+          capabilities:
+            add:
+              - NET_BIND_SERVICE
+        # Ensure your ConfigMap is created before uncommenting this
+        # - configMapRef:
+        #     name: paperless-ai-config
+        volumeMounts:
+        - name: ai-data
+          mountPath: /app/data
+        resources:
+          requests:
+            cpu: 500m
+            memory: 1Gi   # Increased request
+          limits:
+            cpu: "1"
+            memory: 2Gi   # Increased limit to prevent OOMKilled
+        livenessProbe:
+          httpGet:
+            path: /
+            port: http-ai      # Matches the name above
+          initialDelaySeconds: 45 # Increased slightly to allow the RAG service to spin up
+          periodSeconds: 30
+      volumes:
+      - name: ai-data
+        persistentVolumeClaim:
+          claimName: paperless-ai-pvc

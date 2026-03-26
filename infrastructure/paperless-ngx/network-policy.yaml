@@ -3,8 +3,6 @@ kind: NetworkPolicy
 metadata:
   name: paperless-ngx-network-policy
   namespace: paperless-ngx
-  labels:
-    app: paperless-ngx
 spec:
   podSelector:
     matchLabels:
@@ -13,11 +11,19 @@ spec:
   - Ingress
   - Egress
   ingress:
-  # Allow ingress traffic from any namespace for web access
+  # 1. Allow internal cluster traffic (Ingress/Traefik)
   - ports:
     - protocol: TCP
       port: 8000
-  # Allow database access from paperless app
+  # 2. NEW: Allow Paperless-AI to talk to Paperless-ngx
+  - from:
+    - podSelector:
+        matchLabels:
+          app: paperless-ai
+    ports:
+    - protocol: TCP
+      port: 8000
+  # 3. Allow app to talk to its own DB/Redis/Tika/Gotenberg
   - from:
     - podSelector:
         matchLabels:
@@ -26,33 +32,11 @@ spec:
     ports:
     - protocol: TCP
       port: 5432
-  # Allow redis access from paperless app
-  - from:
-    - podSelector:
-        matchLabels:
-          app: paperless-ngx
-          component: app
-    ports:
     - protocol: TCP
       port: 6379
-  # Allow tika access from paperless app
-  - from:
-    - podSelector:
-        matchLabels:
-          app: paperless-ngx
-          component: app
-    ports:
     - protocol: TCP
       port: 9998
-  # Allow gotenberg access from paperless app
-  - from:
-    - podSelector:
-        matchLabels:
-          app: paperless-ngx
-          component: app
-    ports:
     - protocol: TCP
       port: 3000
   egress:
-  # Allow all egress traffic
-  - {}
+  - {} # Allows all outgoing traffic (needed for Ollama/External APIs)
