@@ -26,17 +26,6 @@ spec:
         envFrom:
         - configMapRef:
             name: paperless-ai-config
-        env:
-        - name: PAPERLESS_API_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: paperless-ai-secrets
-              key: PAPERLESS_API_TOKEN
-        - name: PAPERLESS_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: paperless-ai-secrets
-              key: PAPERLESS_TOKEN
         ports:
         - name: http-ai        # Added a name here
           containerPort: 3001 

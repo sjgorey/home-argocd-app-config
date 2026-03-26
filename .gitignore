@@ -1,3 +1,4 @@
+.continue/
 # Cloudflared secret
 infrastructure/cloudflared/secret.yaml
 /tls/*
