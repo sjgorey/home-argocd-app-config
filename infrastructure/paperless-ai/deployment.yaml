@@ -42,11 +42,11 @@ spec:
           mountPath: /app/data
         resources:
           requests:
-            cpu: 500m
-            memory: 1Gi   # Increased request
+            cpu: "1.5"
+            memory: 2Gi   # Increased request
           limits:
-            cpu: "1"
-            memory: 2Gi   # Increased limit to prevent OOMKilled
+            cpu: "2"
+            memory: 4Gi   # Increased limit to prevent OOMKilled
         livenessProbe:
           httpGet:
             path: /
