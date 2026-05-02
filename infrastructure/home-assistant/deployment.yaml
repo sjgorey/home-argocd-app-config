@@ -14,10 +14,12 @@ spec:
         app: home-assistant
     spec:
       nodeSelector:
-        kubernetes.io/arch: amd64
+        kubernetes.io/hostname: dell-192-168-1-7
       containers:
       - name: home-assistant
         image: ghcr.io/home-assistant/home-assistant:latest
+        securityContext:
+          privileged: true
         ports:
         - containerPort: 8123
         volumeMounts:
@@ -26,6 +28,8 @@ spec:
         - name: custom-config
           mountPath: /config/packages/custom.yaml
           subPath: custom.yaml
+        - name: zigbee
+          mountPath: /dev/zigbee
         resources:
           requests:
             cpu: "100m"
@@ -40,3 +44,7 @@ spec:
       - name: custom-config
         configMap:
           name: home-assistant-custom-config
+      - name: zigbee
+        hostPath:
+          path: /dev/serial/by-id/usb-Itead_Sonoff_Zigbee_3.0_USB_Dongle_Plus_V2_02b6b3d219a1f011815e2c81bb936ffa-if00-port0
+          type: CharDevice
