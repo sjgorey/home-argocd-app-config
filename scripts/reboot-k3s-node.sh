@@ -88,6 +88,30 @@ volume_health_summary() {
       | join(" ")'
 }
 
+# Longhorn keeps instance-manager PDBs at minAvailable=1 even after replicas
+# leave the node, which blocks kubectl drain. Open them once evacuation is done.
+allow_instance_manager_eviction() {
+  local pdbs
+  pdbs="$("$KUBECTL" -n "$LONGHORN_NS" get pdb -o json \
+    | jq -r --arg node "$NODE_NAME" '
+        .items[]
+        | select((.metadata.name // "") | startswith("instance-manager-"))
+        | select(.spec.selector.matchLabels["longhorn.io/node"] == $node)
+        | .metadata.name')"
+
+  if [[ -z "$pdbs" ]]; then
+    echo "  No instance-manager PDB found for $NODE_NAME."
+    return 0
+  fi
+
+  while IFS= read -r pdb; do
+    [[ -z "$pdb" ]] && continue
+    echo "  Allowing disruption on PDB $pdb"
+    "$KUBECTL" -n "$LONGHORN_NS" patch "pdb/$pdb" --type merge \
+      -p '{"spec":{"minAvailable":0}}'
+  done <<< "$pdbs"
+}
+
 echo "=== Restarting k3s node: $NODE_NAME ($NODE_IP) ==="
 
 IS_MASTER="$("$KUBECTL" get node "$NODE_NAME" -o jsonpath='{.metadata.labels.node-role\.kubernetes\.io/control-plane}' 2>/dev/null || true)"
@@ -156,6 +180,9 @@ if [[ "$HAS_LONGHORN" -eq 1 ]]; then
     echo "  Still waiting for $count running replica(s)... ($(date +%T))"
     sleep 10
   done
+
+  echo "Opening Longhorn instance-manager PDBs so drain can proceed..."
+  allow_instance_manager_eviction
 fi
 
 echo "Draining node (failing on errors)..."
