@@ -37,3 +37,12 @@ metadata:
   name: replica-auto-balance
   namespace: longhorn-system
 value: "least-effort"  # Enable auto-balancing (default: disabled)
+---
+# During kubectl drain, automatically evacuate replicas that would otherwise
+# block instance-manager eviction (safer node reboots / maintenance).
+apiVersion: longhorn.io/v1beta2
+kind: Setting
+metadata:
+  name: node-drain-policy
+  namespace: longhorn-system
+value: "block-for-eviction-if-contains-last-replica"
