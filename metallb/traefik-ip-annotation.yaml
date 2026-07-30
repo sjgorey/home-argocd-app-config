@@ -1,0 +1,9 @@
+# Apply after Traefik install/upgrade so it does not steal Unbound's VIP (.241).
+# Unbound owns 192.168.1.241; Traefik should use 192.168.1.242.
+apiVersion: v1
+kind: Service
+metadata:
+  name: traefik
+  namespace: kube-system
+  annotations:
+    metallb.universe.tf/loadBalancerIPs: "192.168.1.242"

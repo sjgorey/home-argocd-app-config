@@ -27,6 +27,7 @@ spec:
       containers:
         - name: unbound
           image: mvance/unbound:latest
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 53
               protocol: TCP
