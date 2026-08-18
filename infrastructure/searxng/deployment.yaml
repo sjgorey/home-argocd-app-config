@@ -37,6 +37,10 @@ spec:
               mountPath: /etc/searxng/settings.yml
               subPath: settings.yml
               readOnly: true
+            - name: config
+              mountPath: /etc/searxng/uwsgi.ini
+              subPath: uwsgi.ini
+              readOnly: true
           resources:
             requests:
               cpu: "100m"
@@ -48,14 +52,18 @@ spec:
             httpGet:
               path: /
               port: http
-            initialDelaySeconds: 5
+            initialDelaySeconds: 20
+            timeoutSeconds: 5
             periodSeconds: 10
+            failureThreshold: 12
           livenessProbe:
             httpGet:
               path: /
               port: http
-            initialDelaySeconds: 15
+            initialDelaySeconds: 90
+            timeoutSeconds: 5
             periodSeconds: 20
+            failureThreshold: 5
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
