@@ -26,6 +26,8 @@ metadata:
     app: cloudbeaver
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: cloudbeaver
@@ -34,6 +36,8 @@ spec:
       labels:
         app: cloudbeaver
     spec:
+      nodeSelector:
+        kubernetes.io/arch: amd64
       containers:
         - name: cloudbeaver
           image: dbeaver/cloudbeaver:latest

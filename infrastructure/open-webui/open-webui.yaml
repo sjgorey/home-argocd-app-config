@@ -26,6 +26,8 @@ metadata:
     app: open-webui
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: open-webui
@@ -34,8 +36,19 @@ spec:
       labels:
         app: open-webui
     spec:
+      # Dell already has a Longhorn replica; HP/Thinkpad are smaller 8 GiB boxes.
       nodeSelector:
-        kubernetes.io/arch: arm64
+        kubernetes.io/arch: amd64
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - dell-192-168-1-7
       containers:
         - name: open-webui
           image: ghcr.io/open-webui/open-webui:main
@@ -48,6 +61,16 @@ spec:
               value: "http://192.168.1.10:11434"
             - name: OLLAMA_BASE_URL
               value: "http://192.168.1.10:11434"
+            - name: DEFAULT_MODELS
+              value: "qwen3.5:latest"
+            - name: ENABLE_WEB_SEARCH
+              value: "true"
+            - name: WEB_SEARCH_ENGINE
+              value: "searxng"
+            - name: SEARXNG_QUERY_URL
+              value: "http://searxng.searxng.svc:8080/search?q=<query>&format=json"
+            - name: WEB_SEARCH_RESULT_COUNT
+              value: "5"
             - name: WEBUI_SECRET_KEY
               valueFrom:
                 secretKeyRef:
@@ -58,8 +81,23 @@ spec:
               cpu: "100m"
               memory: "256Mi"
             limits:
-              cpu: "500m"
+              cpu: "1500m"
               memory: "1Gi"
+          # Embedding-model load can take a few minutes; 10m startup budget.
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 60
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
           volumeMounts:
             - name: data
               mountPath: /app/backend/data

@@ -1,5 +1,5 @@
 # Longhorn Storage Settings Configuration
-# These settings can be adjusted to manage disk space usage on ARM64 nodes
+# Two replicas: three AMD nodes cannot each hold a full 3-copy set of ~259Gi.
 
 apiVersion: longhorn.io/v1beta2
 kind: Setting
@@ -29,6 +29,13 @@ metadata:
   name: snapshot-max-count
   namespace: longhorn-system
 value: "50"   # Reduce max snapshots per volume (default: 250)
+---
+apiVersion: longhorn.io/v1beta2
+kind: Setting
+metadata:
+  name: default-replica-count
+  namespace: longhorn-system
+value: "2"
 ---
 # Enable replica auto-balancing to distribute load
 apiVersion: longhorn.io/v1beta2

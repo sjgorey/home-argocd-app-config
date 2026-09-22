@@ -13,6 +13,8 @@ spec:
       labels:
         app: registry-ui
     spec:
+      nodeSelector:
+        kubernetes.io/arch: amd64
       containers:
         - name: registry-ui
           image: joxit/docker-registry-ui:latest

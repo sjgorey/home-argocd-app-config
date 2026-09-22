@@ -304,7 +304,8 @@ metrics:
       relabelings: []
       scrapeTimeout: ""
 namespaceOverride: ""
-nodeSelector: {}
+nodeSelector:
+  kubernetes.io/arch: amd64
 oci_meta:
   enabled: false
   images:

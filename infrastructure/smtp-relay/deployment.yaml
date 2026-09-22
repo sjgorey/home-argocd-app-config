@@ -28,7 +28,7 @@ spec:
         app: smtp-relay
     spec:
       nodeSelector:
-        kubernetes.io/arch: arm64
+        kubernetes.io/arch: amd64
       serviceAccountName: default
       
       containers:
